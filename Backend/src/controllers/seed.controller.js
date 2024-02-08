@@ -9,7 +9,7 @@ const seedController = async (req, res, next) => {
     return res.status(201).json({
       success: true,
       message: "Insert is successful",
-      users,
+      users
     });
   } catch (error) {
     next(error);

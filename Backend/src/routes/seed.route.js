@@ -1,6 +1,5 @@
-const { seedController } = require("../controllers/seed.controller");
-
 const seedRouter = require("express").Router();
+const { seedController } = require("../controllers/seed.controller");
 
 seedRouter.get("/users", seedController);
 

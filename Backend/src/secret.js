@@ -16,7 +16,7 @@ const usersImagePath =
 const allowedFileType = process.env.ALLOWED_FILE_TYPES || [
   "image/jpg",
   "image/png",
-  "image/jpeg",
+  "image/jpeg"
 ];
 const maxFileSize = Number(process.env.MAX_FILE_SIZE) || 2097152;
 
@@ -31,5 +31,5 @@ module.exports = {
   usersImagePath,
   allowedFileType,
   maxFileSize,
-  jwtAccessKey,
+  jwtAccessKey
 };

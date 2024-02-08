@@ -2,9 +2,9 @@ const errorResponse = (
   res,
   { statusCode = 500, message = "Something Broke!" }
 ) => {
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     success: false,
-    message,
+    message
   });
 };
 
@@ -12,10 +12,10 @@ const successResponse = (
   res,
   { statusCode = 200, message = "Successful", payload = {} }
 ) => {
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     success: true,
     message,
-    payload,
+    payload
   });
 };
 

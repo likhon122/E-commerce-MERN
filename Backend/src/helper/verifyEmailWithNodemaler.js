@@ -7,8 +7,8 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: smtpUsername,
-    pass: smtpPassword,
-  },
+    pass: smtpPassword
+  }
 });
 
 const emailVerifyWithNodemaler = async (emailData) => {
@@ -17,13 +17,12 @@ const emailVerifyWithNodemaler = async (emailData) => {
       from: smtpUsername,
       to: emailData.email,
       subject: emailData.subject,
-      html: emailData.html,
+      html: emailData.html
     };
-    const info = await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     console.log(error);
     console.error("Error occured while mail sending");
-    return;
   }
 };
 

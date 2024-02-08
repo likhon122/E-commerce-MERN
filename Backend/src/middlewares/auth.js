@@ -60,8 +60,6 @@ const isAdmin = (req, res, next) => {
     if (!user) {
       throw createError(403, "User is not found");
     }
-
-    console.log(user);
     //match user is admin or not
     //if user is admin to go next function or throw error
     if (user.isAdmin) {

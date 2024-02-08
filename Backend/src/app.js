@@ -15,7 +15,7 @@ const authRouter = require("./routes/auth.route");
 const limitter = rateLimit({
   windowMs: 1 * 60 * 1000,
   limit: 10,
-  message: "Too may request for this ip! Please try again Later.",
+  message: "Too may request for this ip! Please try again Later."
 });
 
 app.use(limitter);
@@ -47,12 +47,12 @@ app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     return errorResponse(res, {
       statusCode: 400,
-      message: err.message,
+      message: err.message
     });
   }
   return res.status(err.status || 500).json({
     statusCode: err.status || 500,
-    message: err.message || "Internal Server Error",
+    message: err.message || "Internal Server Error"
   });
 });
 

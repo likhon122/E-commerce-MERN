@@ -1,17 +1,17 @@
-const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const createError = require("http-errors");
+
+const User = require("../models/user.model");
 const { createJsonWebToken } = require("../helper/jsonwebtoken");
 const { jwtAccessKey } = require("../secret");
 const { successResponse } = require("../helper/responseHelper");
 
 const userLogin = async (req, res, next) => {
   try {
-    //fetch user email and password
     const { email, password } = req.body;
 
     //check user is exist
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email });
     if (!user) {
       throw createError(
         404,
@@ -35,7 +35,7 @@ const userLogin = async (req, res, next) => {
         maxAge: 15 * 60 * 1000,
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "none"
       });
     } catch (error) {
       throw createError(400, "Token don't store on cookie");
@@ -72,7 +72,7 @@ const userLogout = async (req, res, next) => {
     successResponse(res, {
       statusCode: 200,
       message: "User is logged out successfully",
-      payload: {},
+      payload: {}
     });
   } catch (error) {
     //for find any error to send error messages

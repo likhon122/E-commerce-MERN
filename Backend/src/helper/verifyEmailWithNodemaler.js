@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const emailVerifyWithNodemaler = async (emailData) => {
+const emailVerifyWithNodemailer = async (emailData) => {
   try {
     const mailOptions = {
       from: smtpUsername,
@@ -21,9 +21,8 @@ const emailVerifyWithNodemaler = async (emailData) => {
     };
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.log(error);
-    console.error("Error occured while mail sending");
+    throw error;
   }
 };
 
-module.exports = { emailVerifyWithNodemaler };
+module.exports = { emailVerifyWithNodemailer };

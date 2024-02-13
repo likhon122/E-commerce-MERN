@@ -8,6 +8,8 @@ const userImagePath =
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY || "";
 const jwtAccessKey = process.env.JWT_ACCESS_KEY || "";
+const jwtRefreshKey = process.env.JWT_REFRESH_KEY || "";
+const jwtForgetPasswordKey = process.env.JWT_FORGET_PASSWORD_KEY || "";
 const smtpUsername = process.env.SMTP_USERNAME || "";
 const smtpPassword = process.env.SMTP_PASSWORD || "";
 const websiteURL = process.env.WEBSITE_URL || "";
@@ -31,5 +33,7 @@ module.exports = {
   usersImagePath,
   allowedFileType,
   maxFileSize,
-  jwtAccessKey
+  jwtAccessKey,
+  jwtForgetPasswordKey,
+  jwtRefreshKey
 };

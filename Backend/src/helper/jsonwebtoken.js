@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { jwtAccessKey, jwtRefreshKey } = require("../secret");
 
 const createJsonWebToken = (payload, secretKey, expireTime) => {
   if (typeof payload !== "object" || !payload) {
@@ -20,4 +21,39 @@ const createJsonWebToken = (payload, secretKey, expireTime) => {
   }
 };
 
-module.exports = { createJsonWebToken };
+const createAccessToken = (res, user) => {
+  try {
+    const accessToken = createJsonWebToken({ user }, jwtAccessKey, "15m");
+    try {
+      res.cookie("accessToken", accessToken, {
+        maxAge: 15 * 60 * 1000, // 1m
+        httpOnly: true,
+        // secure:true,
+        sameSite: "none"
+      });
+    } catch (error) {
+      throw error;
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+const createRefreshToken = (res, user) => {
+  try {
+    const refreshToken = createJsonWebToken({ user }, jwtRefreshKey, "7d");
+    try {
+      res.cookie("refreshToken", refreshToken, {
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+        httpOnly: true,
+        // secure: true,
+        sameSite: "none"
+      });
+    } catch (error) {
+      throw error;
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { createJsonWebToken, createAccessToken, createRefreshToken };

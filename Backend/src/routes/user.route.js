@@ -1,4 +1,5 @@
 const userRouter = require("express").Router();
+
 const {
   getUsers,
   getUser,
@@ -6,12 +7,21 @@ const {
   processRegister,
   verifyUser,
   updateUser,
-  manageUser
+  manageUser,
+  updateUserPassword,
+  forgetUserPassword,
+  resetUserPassword
 } = require("../controllers/user.controller");
 const { isLoggedIn, isLoggedOut, isAdmin } = require("../middlewares/auth");
 const upload = require("../middlewares/uploadImage");
 const { runValidation } = require("../validation");
-const { userRegistrationValidation } = require("../validation/auth");
+const {
+  userRegistrationValidation,
+  userPasswordUpdateValidation,
+  userForgetPasswordValidation,
+  userResetPasswordValidation,
+  userUpdateValidation
+} = require("../validation/auth");
 
 userRouter.post(
   "/process-register",
@@ -22,11 +32,41 @@ userRouter.post(
   processRegister
 );
 
-userRouter.post("/verify", isLoggedOut, verifyUser);
+userRouter.post("/verify-user", isLoggedOut, verifyUser);
 userRouter.get("/", isLoggedIn, isAdmin, getUsers);
 userRouter.get("/:id", isLoggedIn, getUser);
+userRouter.post(
+  "/forget-password",
+  isLoggedOut,
+  userForgetPasswordValidation,
+  runValidation,
+  forgetUserPassword
+);
+
+userRouter.put(
+  "/reset-password",
+  isLoggedOut,
+  userResetPasswordValidation,
+  runValidation,
+  resetUserPassword
+);
+
 userRouter.delete("/:id", isLoggedIn, deleteUser);
-userRouter.put("/:id", upload.single("image"), isLoggedIn, updateUser);
+userRouter.put(
+  "/:id",
+  upload.single("image"),
+  isLoggedIn,
+  userUpdateValidation,
+  runValidation,
+  updateUser
+);
 userRouter.put("/manage-user/:id", isLoggedIn, isAdmin, manageUser);
+userRouter.put(
+  "/update-password/:id",
+  userPasswordUpdateValidation,
+  runValidation,
+  isLoggedIn,
+  updateUserPassword
+);
 
 module.exports = userRouter;

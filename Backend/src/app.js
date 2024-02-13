@@ -1,17 +1,17 @@
 const express = require("express");
-const app = express();
 const createError = require("http-errors");
 const multer = require("multer");
 const morgan = require("morgan");
 const xssClean = require("xss-clean");
 const cookieParser = require("cookie-parser");
-
 const rateLimit = require("express-rate-limit");
-const userRouter = require("../src/routes/user.route");
+
+const userRouter = require("./routes/user.route");
 const seedRouter = require("./routes/seed.route");
 const { errorResponse } = require("./helper/responseHelper");
 const authRouter = require("./routes/auth.route");
 
+const app = express();
 const limitter = rateLimit({
   windowMs: 1 * 60 * 1000,
   limit: 10,
@@ -28,7 +28,6 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/test", (req, res, next) => {
   try {
     res.status(200).json({ success: true, message: "Test  page" });
-    // next(createError(404, "Routes Not Found"));
   } catch (error) {
     res.status(500).send("error is here");
   }

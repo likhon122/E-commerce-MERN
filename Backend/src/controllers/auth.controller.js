@@ -1,16 +1,22 @@
 const bcrypt = require("bcryptjs");
 const createError = require("http-errors");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/user.model");
-const { createJsonWebToken } = require("../helper/jsonwebtoken");
-const { jwtAccessKey } = require("../secret");
+const {
+  createAccessToken,
+  createRefreshToken
+} = require("../helper/jsonwebtoken");
+const { jwtRefreshKey } = require("../secret");
 const { successResponse } = require("../helper/responseHelper");
 
 const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    //check user is exist
+    if (!email || !password) {
+      throw createError("Email or password is required");
+    }
     const user = await User.findOne({ email });
     if (!user) {
       throw createError(
@@ -18,66 +24,109 @@ const userLogin = async (req, res, next) => {
         "User dose not exist with this email. Please register first!"
       );
     }
-    //if exist to check user is not banned
     if (user && user.banned) {
       throw createError("403", "User is banned. Please contact the authority!");
     }
-    //if user is not banned to compare password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       throw createError(401, "User email or password did not matched");
     }
 
-    //create refresh token, jwd token and set token to cookie!
-    const accessToken = createJsonWebToken({ user }, jwtAccessKey, "15m");
-    try {
-      res.cookie("accessToken", accessToken, {
-        maxAge: 15 * 60 * 1000,
-        httpOnly: true,
-        secure: true,
-        sameSite: "none"
-      });
-    } catch (error) {
-      throw createError(400, "Token don't store on cookie");
-    }
-    delete user.password;
-    console.log(user);
-    console.log(user.password);
+    // create refresh token, jwd token and set token to cookie!
+    createAccessToken(res, user);
+    createRefreshToken(res, user);
 
-    //finally access the user and successfully send success message
+    // delete user.password;
+
+    const userWithoutPassword = user.toObject();
+
+    delete userWithoutPassword.password;
+
     successResponse(res, {
       statusCode: 200,
       message: "User is logged in successfully",
-      payload: { user },
+      payload: { userWithoutPassword }
     });
   } catch (error) {
-    //for find any error to send error messages
     next(error);
   }
 };
 const userLogout = async (req, res, next) => {
   try {
-    //find cookie to header and delete this cookie
-
-    //fnd this cookie
-    const accessToken = req.cookies.accessToken;
+    // fnd this cookie
+    const { accessToken, refreshToken } = req.cookies;
     if (!accessToken) {
       throw createError(401, "Access token is not found. Please login first!");
     }
-    if (!accessToken) {
-      throw createError(400, "Please Login First");
+    if (!refreshToken) {
+      throw createError(401, "Access token is not found. Please login first!");
     }
     res.clearCookie("accessToken");
-    //send success response
+    res.clearCookie("refreshToken");
     successResponse(res, {
       statusCode: 200,
       message: "User is logged out successfully",
       payload: {}
     });
   } catch (error) {
-    //for find any error to send error messages
+    next(error);
+  }
+};
+const refreshTokenRoute = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      throw createError(401, "Refresh token not found. Please login first");
+    }
+
+    const decodedRefreshToken = jwt.verify(refreshToken, jwtRefreshKey);
+
+    if (!decodedRefreshToken) {
+      throw createError(
+        400,
+        "Refresh token is invalid. Please send a valid refresh token"
+      );
+    }
+
+    createAccessToken(res, decodedRefreshToken.user);
+    successResponse(res, {
+      statusCode: 200,
+      message: "Access Token created Successfully",
+      payload: {}
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+const protectedRoute = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      throw createError(
+        401,
+        "User verify unsuccessful.Don't access the user for all protected route. Refresh token not found. Please login first!"
+      );
+    }
+
+    const decodedRefreshToken = jwt.verify(refreshToken, jwtRefreshKey);
+
+    if (!decodedRefreshToken) {
+      throw createError(
+        400,
+        "Refresh token is invalid. Please send a valid refresh token!"
+      );
+    }
+    successResponse(res, {
+      statusCode: 200,
+      message:
+        "User verify successful.Please access the user for all protected route.",
+      payload: {}
+    });
+  } catch (error) {
     next(error);
   }
 };
 
-module.exports = { userLogin, userLogout };
+module.exports = { userLogin, userLogout, refreshTokenRoute, protectedRoute };

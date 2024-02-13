@@ -6,17 +6,17 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "User Name is Reqired"],
+      required: [true, "User Name is Required"],
       trim: true,
-      minlength: [3, "User Name is must have at least 3 charecres"],
-      maxlength: [31, "User Name is must have less than 31 charecres"]
+      minlength: [3, "User Name is must have at least 3 characters"],
+      maxlength: [31, "User Name is must have less than 31 characters"]
     },
     email: {
       type: String,
-      required: [true, "Email is Reqired"],
+      required: [true, "Email is Required"],
       trim: true,
       unique: true,
-      lowarcase: true,
+      lowercase: true,
       validate: {
         validator: (v) => {
           return /^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/.test(
@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema(
     },
     image: {
       type: Buffer,
-      required: [true, "User Image is required"],
+      default: "public/images/userImage/default.png",
       contentType: String
     },
     isAdmin: {

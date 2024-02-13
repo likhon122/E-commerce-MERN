@@ -5,7 +5,7 @@ const { jwtAccessKey } = require("../secret");
 const isLoggedIn = (req, res, next) => {
   try {
     // Check token existence
-    const accessToken = req.cookies.accessToken;
+    const { accessToken } = req.cookies;
     if (!accessToken) {
       throw createError(401, "Access token is not found. Please login first!");
     }
@@ -35,7 +35,7 @@ const isLoggedIn = (req, res, next) => {
 const isLoggedOut = (req, res, next) => {
   try {
     // Check token existence
-    const accessToken = req.cookies.accessToken;
+    const { accessToken } = req.cookies;
     if (accessToken) {
       const decoded = jwt.verify(accessToken, jwtAccessKey);
       if (decoded) {
@@ -56,12 +56,12 @@ const isAdmin = (req, res, next) => {
   try {
     // find user from re.user
 
-    const user = req.user;
+    const { user } = req;
     if (!user) {
       throw createError(403, "User is not found");
     }
-    //match user is admin or not
-    //if user is admin to go next function or throw error
+    // match user is admin or not
+    // if user is admin to go next function or throw error
     if (user.isAdmin) {
       next();
     } else {
@@ -72,5 +72,6 @@ const isAdmin = (req, res, next) => {
     return next(error);
   }
 };
+
 
 module.exports = { isLoggedIn, isLoggedOut, isAdmin };

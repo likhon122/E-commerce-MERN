@@ -129,7 +129,7 @@ const updateUserService = async (userId, req, next) => {
     const options = { password: 0 };
     await findWithId(userId, User, options);
 
-    let updates = {};
+    const updates = {};
 
     for (const key in req.body) {
       if (["name", "phone", "password", "address"].includes(key)) {

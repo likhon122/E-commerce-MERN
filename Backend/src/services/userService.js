@@ -9,7 +9,14 @@ const { createJsonWebToken } = require("../helper/jsonwebtoken");
 const {
   emailVerifyWithNodemailer
 } = require("../helper/verifyEmailWithNodemaler");
-const { jwtSecretKey, websiteURL, jwtForgetPasswordKey } = require("../secret");
+const {
+  jwtSecretKey,
+  websiteURL,
+  jwtForgetPasswordKey,
+  maxFileSize
+} = require("../secret");
+const cloudinary = require("../config/cloudinary");
+const { imagePublicUrlWithoutExtention } = require("../helper/cloudinary");
 
 const processRegisterUserService = async (
   name,
@@ -17,7 +24,7 @@ const processRegisterUserService = async (
   password,
   phone,
   address,
-  // bufferImageString,
+  image,
   next
 ) => {
   try {
@@ -28,11 +35,11 @@ const processRegisterUserService = async (
     }
 
     // create jwt token
-    const token = createJsonWebToken(
-      { name, email, password, phone, address },
-      jwtSecretKey,
-      "10m"
-    );
+    const tokenData = { name, email, password, phone, address };
+    if (image) {
+      tokenData.image = image.path;
+    }
+    const token = createJsonWebToken(tokenData, jwtSecretKey, "10m");
 
     // Sending email process
     const emailData = {
@@ -46,7 +53,7 @@ const processRegisterUserService = async (
 
     // send email with nodemailer
     await emailVerifyWithNodemailer(emailData);
-    // return token;
+    return token;
   } catch (error) {
     throw error;
   }
@@ -59,13 +66,23 @@ const verifyUserService = async (token, next) => {
       next(createError(401, "User is not able to registered"));
       return;
     }
-    const userExistByEmail = await User.exists({ email: decoded.email });
-    const userExistByPhone = await User.exists({ email: decoded.phone });
+    const { name, email, password, address, phone } = decoded;
+    const userExistByEmail = await User.exists({ email });
+    const userExistByPhone = await User.exists({ phone });
     if (userExistByEmail || userExistByPhone) {
       next(createError(400, "User is already exist Please sign in"));
       return;
     }
-    await User.create(decoded);
+
+    const createdUser = { name, email, password, address, phone };
+    const { image } = decoded;
+    if (image) {
+      const response = await cloudinary.uploader.upload(image, {
+        folder: "e-commerce-mern/users"
+      });
+      createdUser.image = response.secure_url;
+    }
+    await User.create(createdUser);
     return true;
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
@@ -109,7 +126,17 @@ const deleteUserService = async (id, option) => {
     const user = await findWithId(id, User, option);
     const userImagePath = user.image;
 
-    await deleteImage(userImagePath);
+    const withoutExtentionImagePath =
+      imagePublicUrlWithoutExtention(userImagePath);
+    const { result } = await cloudinary.uploader.destroy(
+      `e-commerce-mern/users/${withoutExtentionImagePath}`
+    );
+    if (result !== "ok") {
+      throw createError(
+        400,
+        "User image is not deleted successfully. Please try again."
+      );
+    }
     await User.findByIdAndDelete({
       _id: user._id,
       isAdmin: false
@@ -119,36 +146,44 @@ const deleteUserService = async (id, option) => {
   }
 };
 
-const updateUserService = async (userId, req, next) => {
+const updateUserService = async (userId, image, updates) => {
   try {
     const updateOptions = {
       new: true,
       runValidators: true,
       context: "query"
     };
+    const updateUserInfo = updates;
     const options = { password: 0 };
-    await findWithId(userId, User, options);
+    const user = await findWithId(userId, User, options);
 
-    const updates = {};
-
-    for (const key in req.body) {
-      if (["name", "phone", "password", "address"].includes(key)) {
-        updates[key] = req.body[key];
-      }
-    }
-
-    const image = req.file;
     if (image) {
       if (image.size > 1024 * 1024 * 2) {
-        next(
-          createError(
-            "400",
-            "Image size too large. Please select less then 2mb image."
-          )
+        throw createError(
+          "400",
+          "Image size too large. Please select less then 2mb image."
         );
-        return;
       }
-      updates.image = image.buffer;
+      if (user.image === "public/images/userImage/default.png") {
+        const response = await cloudinary.uploader.upload(image.path, {
+          folder: "e-commerce-mern/users"
+        });
+        updateUserInfo.image = response.secure_url;
+      } else {
+        const imagePathWihoutExtention = imagePublicUrlWithoutExtention(
+          user.image
+        );
+        const { result } = await cloudinary.uploader.destroy(
+          `e-commerce-mern/users/${imagePathWihoutExtention}`
+        );
+        if (result !== "ok") {
+          throw createError(400, "User Image is not updated");
+        }
+        const response = await cloudinary.uploader.upload(image.path, {
+          folder: "e-commerce-mern/users"
+        });
+        updateUserInfo.image = response.secure_url;
+      }
     }
 
     const updatedUser = await User.findByIdAndUpdate(

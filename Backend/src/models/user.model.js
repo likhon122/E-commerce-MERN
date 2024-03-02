@@ -49,9 +49,8 @@ const userSchema = new mongoose.Schema(
       max: [11, "User address is must be use 11 numbers"]
     },
     image: {
-      type: Buffer,
-      default: "public/images/userImage/default.png",
-      contentType: String
+      type: String,
+      default: "public/images/userImage/default.png"
     },
     isAdmin: {
       type: Boolean,

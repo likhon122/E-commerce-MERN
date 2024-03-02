@@ -15,10 +15,11 @@ const {
   resetUserPasswordService
 } = require("../services/userService");
 const { createJsonWebToken } = require("../helper/jsonwebtoken");
-const { jwtForgetPasswordKey, websiteURL } = require("../secret");
+const { jwtForgetPasswordKey, websiteURL, maxFileSize } = require("../secret");
 const {
   emailVerifyWithNodemaler
 } = require("../helper/verifyEmailWithNodemaler");
+const { deleteImage } = require("../helper/deleteImage");
 
 const processRegister = async (req, res, next) => {
   try {
@@ -27,26 +28,22 @@ const processRegister = async (req, res, next) => {
       return next(createError(400, "Invalid input data"));
     }
 
-    // if (!req.file) {
-    //   return next(createError(404, "Image file is not found"));
-    // }
-    // const bufferImageString = req.file.buffer.toString("base64");
-
+    const image = req.file;
     // services folder userService file -> processRegisterUserService function
-     await processRegisterUserService(
+    const token = await processRegisterUserService(
       name,
       email,
       password,
       phone,
       address,
-      // bufferImageString,
+      image,
       next
     );
 
     return successResponse(res, {
       statusCode: 200,
-      message: "Please go to your mail and verify your Email."
-      // payload: { token }
+      message: "Please go to your mail and verify your Email.",
+      payload: { token }
     });
   } catch (error) {
     return next(error);
@@ -128,8 +125,18 @@ const deleteUser = async (req, res, next) => {
     const { id } = req.params;
     const option = { password: 0 };
     // services folder userService file -> deleteUserService function
-    await deleteUserService(id, option);
 
+    const { accessToken, refreshToken } = req.cookies;
+    if (!accessToken) {
+      throw createError(401, "Access token is not found. Please login first!");
+    }
+    if (!refreshToken) {
+      throw createError(401, "Access token is not found. Please login first!");
+    }
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    
+    await deleteUserService(id, option);
     successResponse(res, {
       statusCode: 200,
       message: "User was deleted successfully"
@@ -142,9 +149,17 @@ const deleteUser = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
+    const updates = {};
+
+    for (const key in req.body) {
+      if (["name", "phone", "password", "address"].includes(key)) {
+        updates[key] = req.body[key];
+      }
+    }
+    const image = req.file;
 
     // services folder userService file -> updateUserService function
-    const updatedUser = await updateUserService(userId, req, next);
+    const updatedUser = await updateUserService(userId, image, updates);
 
     successResponse(res, {
       statusCode: 200,

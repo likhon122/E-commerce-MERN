@@ -12,8 +12,9 @@ const {
   forgetUserPassword,
   resetUserPassword
 } = require("../controllers/user.controller");
+const { uploadUserImage } = require("../helper/uploadImage");
 const { isLoggedIn, isLoggedOut, isAdmin } = require("../middlewares/auth");
-const upload = require("../middlewares/uploadImage");
+// const upload = require("../middlewares/uploadImage");
 const { runValidation } = require("../validation");
 const {
   userRegistrationValidation,
@@ -25,8 +26,8 @@ const {
 
 userRouter.post(
   "/process-register",
-  upload.single("image"),
   isLoggedOut,
+  uploadUserImage.single("image"),
   userRegistrationValidation,
   runValidation,
   processRegister
@@ -54,12 +55,13 @@ userRouter.put(
 userRouter.delete("/:id", isLoggedIn, deleteUser);
 userRouter.put(
   "/:id",
-  upload.single("image"),
+  uploadUserImage.single("image"),
   isLoggedIn,
   userUpdateValidation,
   runValidation,
   updateUser
 );
+
 userRouter.put("/manage-user/:id", isLoggedIn, isAdmin, manageUser);
 userRouter.put(
   "/update-password/:id",

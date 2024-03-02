@@ -7,8 +7,8 @@ const {
   deleteSingleProduct,
   updateProduct
 } = require("../controllers/product.controller");
+const { uploadProductImage } = require("../helper/uploadImage");
 const { isLoggedIn, isAdmin } = require("../middlewares/auth");
-const upload = require("../middlewares/uploadImage");
 const { runValidation } = require("../validation");
 const {
   createProductValidation,
@@ -17,9 +17,9 @@ const {
 
 productRouter.post(
   "/",
-  upload.single("image"),
   isLoggedIn,
   isAdmin,
+  uploadProductImage.single("image"),
   createProductValidation,
   runValidation,
   createProduct
@@ -30,9 +30,9 @@ productRouter.get("/", readAllProduct);
 productRouter.delete("/:slug", isLoggedIn, isAdmin, deleteSingleProduct);
 productRouter.put(
   "/:slug",
-  upload.single("image"),
   isLoggedIn,
   isAdmin,
+  uploadProductImage.single("image"),
   updateProductValidation,
   runValidation,
   updateProduct

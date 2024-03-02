@@ -9,6 +9,9 @@ const {
   handleReadSingleProductService,
   handleDeleteSingleProductService
 } = require("../services/productService");
+// const { deleteImage } = require("../helper/deleteImage");
+const cloudinary = require("../config/cloudinary");
+const { imagePublicUrlWithoutExtention } = require("../helper/cloudinary");
 
 const createProduct = async (req, res, next) => {
   try {
@@ -46,8 +49,6 @@ const createProduct = async (req, res, next) => {
         "Image size is too large. Please select less than 2mb Product image."
       );
     }
-    const imageBufferString = image.buffer.toString("base64");
-
     const productData = {
       name,
       slug: slugify(name),
@@ -55,7 +56,7 @@ const createProduct = async (req, res, next) => {
       regularPrice,
       percentOff,
       quantity,
-      image: imageBufferString,
+      image: image.path,
       category
     };
 
@@ -73,10 +74,19 @@ const createProduct = async (req, res, next) => {
 
 const readAllProduct = async (req, res, next) => {
   try {
+    const search = req.query.search || "";
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
 
-    const { count, products } = await handleReadAllProductService(page, limit);
+    const searchRegEx = new RegExp(".*" + search + ".*", "i");
+    const filter = {
+      $or: [{ name: { $regex: searchRegEx } }]
+    };
+    const { count, products } = await handleReadAllProductService(
+      page,
+      limit,
+      filter
+    );
 
     return successResponse(res, {
       statusCode: 200,
@@ -131,8 +141,6 @@ const updateProduct = async (req, res, next) => {
   try {
     const { slug } = req.params;
 
-    console.log(req.body);
-
     const updateOptions = { new: true, runValidators: true, context: "query" };
 
     const productExist = await Product.findOne({ slug });
@@ -156,25 +164,52 @@ const updateProduct = async (req, res, next) => {
         updates[key] = req.body[key];
       }
     }
+
+    if (req.body.name) {
+      const isProductExist = await Product.findOne({ name: req.body.name });
+      if (isProductExist) {
+        throw createError(
+          400,
+          "Product is already exist with this name please select another name!"
+        );
+      }
+      updates.slug = slugify(req.body.name);
+    }
+
     const image = req.file;
     if (image) {
       if (image.size > 1024 * 1024 * 2) {
-        next(
-          createError(
-            "400",
-            "Image size too large. Please select less then 2mb image."
-          )
+        throw createError(
+          400,
+          "Image size too large. Please select less then 2mb image."
         );
-        return;
       }
-      updates.image = image.buffer;
+
+      const imagePathWihoutExtention = imagePublicUrlWithoutExtention(
+        productExist.image
+      );
+      const { result } = await cloudinary.uploader.destroy(
+        `e-commerce-mern/products/${imagePathWihoutExtention}`
+      );
+      if (result !== "ok") {
+        throw createError(400, "User Image is not updated. Please try again!");
+      }
+
+      const response = await cloudinary.uploader.upload(image.path, {
+        folder: "e-commerce-mern/products"
+      });
+      if (!response) {
+        throw createError(400, "User image is not uploaded. Please try again!");
+      }
+
+      updates.image = response.secure_url;
     }
 
     const updatedProduct = await Product.findOneAndUpdate(
       { slug },
       updates,
       updateOptions
-    ).select("-image");
+    );
 
     if (!updatedProduct) {
       throw createError(400, "Product Update failed.");

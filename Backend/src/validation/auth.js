@@ -44,8 +44,10 @@ const userRegistrationValidation = [
     .isLength({ min: 11, max: 11 })
     .withMessage(
       "Bangladesh phone number must be at least 11 digit number support"
-    )
+    ),
+  body("image").optional()
 ];
+
 const userLoginValidation = [
   body("email")
     .trim()

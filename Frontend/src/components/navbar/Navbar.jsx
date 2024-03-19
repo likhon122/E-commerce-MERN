@@ -1,6 +1,7 @@
 // import React from 'react'
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
+
 import {
   BsTelephoneInbound,
   BsBookmarkHeartFill,
@@ -12,12 +13,13 @@ import { IoSearchSharp } from "react-icons/io5";
 import { FaBars } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
 
-import { logo } from "..";
+import { logo } from "../../index";
 import NavLinks from "./NavLinks";
 
 const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+
   return (
     <header>
       <nav>
@@ -57,7 +59,10 @@ const Navbar = () => {
                     Home
                   </NavLink>
                 </li>
-                <NavLinks />
+                <NavLinks
+                  showNavbar={showNavbar}
+                  setShowNavbar={setShowNavbar}
+                />
               </ul>
             </div>
             <div className="flex gap-2 items-center justify-center">
@@ -128,7 +133,10 @@ const Navbar = () => {
                 <Link to={"/account"}>
                   <div className="flex justify-center items-center gap-1  cursor-pointer hover:text-cardHoverColor">
                     <RiAccountPinBoxLine className="lg:text-xl text-[17px]" />
-                    <h3 className="text-md">Account</h3>
+                    <div>
+                      <h3 className="text-[18px]">Account</h3>
+                      <h3 className="text-[12px] -mt-2">Register/Login</h3>
+                    </div>
                   </div>
                 </Link>
                 <Link to={"/wishlist"}>
@@ -149,11 +157,12 @@ const Navbar = () => {
         </div>
 
         {/* small size */}
+
         {/* upper navbar for mobile size  */}
-        <div className=" md:hidden  overflow-hidden ">
+        <div className=" md:hidden overflow-x-hidden overflow-y-scroll ">
           <div
-            className={`duration-700 transition-all absolute left-[-100%] w-full h-screen pt-4 ${
-              showNavbar && "left-[0] bg-gray-400 "
+            className={`duration-700 transition-all absolute left-[-100%] w-full h-full pt-4 ${
+              showNavbar && "left-[0] bg-gray-100 "
             }`}
           >
             <ul className={`flex flex-col`}>
@@ -182,27 +191,30 @@ const Navbar = () => {
 
         {/*Profile details for mobile size*/}
         <div
-          className={`md:hidden absolute right-[45px] rounded-md p-3 bg-gray-400  ${
+          className={`md:hidden absolute right-[45px]  rounded-md p-3 bg-gray-100 ${
             showDetails ? "block" : "hidden"
           }`}
         >
           <div className=" flex flex-col justify-start ">
             <Link to={"/account"} onClick={() => setShowDetails(!showDetails)}>
               <div className="flex items-center gap-1 cursor-pointer mb-2 hover:text-cardHoverColor">
-                <RiAccountPinBoxLine className=" text-[17px] " />
-                <h3 className="text-lg">Account</h3>
+                <RiAccountPinBoxLine className=" text-[18px] text-cardHoverColor" />
+                <div>
+                  <h3 className="text-md">Account</h3>
+                  <h3 className="text-[11px]">Register/Login</h3>
+                </div>
               </div>
             </Link>
             <Link to={"/wishlist"} onClick={() => setShowDetails(!showDetails)}>
               <div className="flex items-center  gap-1 cursor-pointer mb-2 hover:text-cardHoverColor">
-                <BsBookmarkHeartFill className=" text-[17px]" />
-                <h3 className="text-lg">Wishlist</h3>
+                <BsBookmarkHeartFill className=" text-[14px] text-cardHoverColor" />
+                <h3 className="text-md">Wishlist</h3>
               </div>
             </Link>
             <Link to={"/cart"} onClick={() => setShowDetails(!showDetails)}>
               <div className="flex  items-center gap-1 cursor-pointer mb-1 hover:text-cardHoverColor">
-                <BsCart className=" text-[17px]" />
-                <h3 className="text-lg">Cart</h3>
+                <BsCart className=" text-[14px] text-cardHoverColor" />
+                <h3 className="text-md">Cart</h3>
               </div>
             </Link>
           </div>

@@ -1,9 +1,15 @@
 // import React from 'react'
 
+import Login from "./Login";
+import Register from "./Register";
+
 const Account = () => {
   return (
-    <div>Account</div>
-  )
-}
+    <div>
+      <Register />
+      <Login />
+    </div>
+  );
+};
 
-export default Account
+export default Account;

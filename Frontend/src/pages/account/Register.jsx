@@ -39,12 +39,12 @@ const Register = () => {
     <>
       {isSuccess && (
         <div className="flex items-center justify-center mt-4">
-          <AlertComponent color="primary" message={registrationData.message} />
+          <AlertComponent color="primary" message={registrationData?.message} />
         </div>
       )}
       {isError && (
         <div className="flex items-center justify-center mt-4">
-          <AlertComponent color="error" message={errorMessage.data.message} />
+          <AlertComponent color="error" message={errorMessage?.data.message} />
         </div>
       )}
 

@@ -130,7 +130,7 @@ const Navbar = () => {
                 )}
               </div>
               <div className="md:flex justify-between items-center gap-2  sm:text-[13px] hidden lg:text-[17px]">
-                <Link to={"/account"}>
+                <Link to={"/register"}>
                   <div className="flex justify-center items-center gap-1  cursor-pointer hover:text-cardHoverColor">
                     <RiAccountPinBoxLine className="lg:text-xl text-[17px]" />
                     <div>
@@ -196,7 +196,10 @@ const Navbar = () => {
           }`}
         >
           <div className=" flex flex-col justify-start ">
-            <Link to={"/account"} onClick={() => setShowDetails(!showDetails)}>
+            <Link
+              to={"/register"}
+              onClick={() => setShowDetails(!showDetails)}
+            >
               <div className="flex items-center gap-1 cursor-pointer mb-2 hover:text-cardHoverColor">
                 <RiAccountPinBoxLine className=" text-[18px] text-cardHoverColor" />
                 <div>

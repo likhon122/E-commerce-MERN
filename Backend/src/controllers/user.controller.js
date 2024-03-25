@@ -28,7 +28,9 @@ const processRegister = async (req, res, next) => {
       return next(createError(400, "Invalid input data"));
     }
 
+    console.log(req.file);
     const image = req.file;
+    // console.log(image);
     // services folder userService file -> processRegisterUserService function
     const token = await processRegisterUserService(
       name,
@@ -135,7 +137,7 @@ const deleteUser = async (req, res, next) => {
     }
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
-    
+
     await deleteUserService(id, option);
     successResponse(res, {
       statusCode: 200,

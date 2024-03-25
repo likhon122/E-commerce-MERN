@@ -1,10 +1,53 @@
-// import React from 'react'
+import { Link } from "react-router-dom";
+import { Form, Formik } from "formik";
 
 import { logo } from "../..";
+import { useRegisterUserMutation } from "../../features/FetchProductData";
+import CustomInput from "../../components/customInput/CustomInput";
+import { registrationFormValidation } from "../../validation/FormValidation";
+import CustomCheckBox from "../../components/customInput/CustomCheckBox";
+import { AlertComponent } from "../../components/keepReact/Alart";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 const Register = () => {
+  const [
+    registerUserMutation,
+    {
+      isSuccess,
+      isLoading,
+      data: registrationData,
+      isError,
+      error: errorMessage
+    }
+  ] = useRegisterUserMutation();
+
+  const submitHandler = async (
+    { agreement, firstName, lastName, ...values },
+    { resetForm }
+  ) => {
+    const name = firstName + " " + lastName;
+
+    const userInfo = { name, ...values };
+
+    const data = await registerUserMutation(userInfo);
+
+    if (data?.data?.success) {
+      resetForm();
+    }
+  };
   return (
     <>
+      {isSuccess && (
+        <div className="flex items-center justify-center mt-4">
+          <AlertComponent color="primary" message={registrationData.message} />
+        </div>
+      )}
+      {isError && (
+        <div className="flex items-center justify-center mt-4">
+          <AlertComponent color="error" message={errorMessage.data.message} />
+        </div>
+      )}
+
       <div className="">
         <div className="flex justify-center items-center min-h-[60vh] max-h-max w-full">
           <div className="bg-white my-5 rounded-md md:p-6 p-3 shadow-lg shadow-gray-500 border  md:min-w-[60%] lg:min-w-[50%] xl:min-w-[30%] min-w-[90%]">
@@ -19,114 +62,88 @@ const Register = () => {
               </div>
             </div>
             <div className="">
-              <form className="flex flex-col gap-3">
-                <div className="md:flex md:justify-between md:items-center gap-2 ">
-                  <div className="flex flex-col gap-1 w-full">
-                    <label
-                      htmlFor="firstName"
-                      className="md:font-medium font-normal"
-                    >
-                      FirstName
-                    </label>
-                    <input
+              <Formik
+                initialValues={{
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  password: "",
+                  confirmPassword: "",
+                  phone: "",
+                  address: ""
+                }}
+                validationSchema={registrationFormValidation}
+                onSubmit={submitHandler}
+              >
+                <Form className="flex flex-col gap-3">
+                  <div className="md:flex md:justify-between md:items-center gap-2 ">
+                    <div className="flex flex-col gap-1 w-full">
+                      <CustomInput
+                        label="First Name"
+                        name="firstName"
+                        type="text"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1 w-full">
+                      <CustomInput
+                        label="Last Name"
+                        name="lastName"
+                        type="text"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <CustomInput label="Email" name="email" type="email" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <CustomInput
+                      label="Password"
+                      name="password"
+                      type="password"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <CustomInput
+                      label="Confirm Password"
+                      name="confirmPassword"
+                      type="password"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <CustomInput label="Phone Number" name="phone" type="tel" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <CustomInput
+                      label="Full Address"
+                      name="address"
                       type="text"
-                      name="firstName"
-                      id="firstName"
-                      className="outline-none border border-gray-500 md:px-3 py-1 rounded-md focus:ring-cardHoverColor focus:border-cardHoverColor ring-gray-500 focus:ring-1 px-2 w="
-                      spellCheck="false"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1 w-full">
-                    <label
-                      htmlFor="lastName"
-                      className="md:font-medium font-normal"
-                    >
-                      LastName
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      id="lastName"
-                      className="outline-none border border-gray-500 md:px-3 py-1 rounded-md focus:ring-cardHoverColor focus:border-cardHoverColor ring-gray-500 focus:ring-1 px-2"
-                      spellCheck="false"
-                    />
+                  <div className="flex gap-2">
+                    <CustomCheckBox name="agreement" type="checkbox" />
                   </div>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="email" className="md:font-medium font-normal">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    className="outline-none border border-gray-500 md:px-3 py-1 rounded-md focus:ring-cardHoverColor focus:border-cardHoverColor ring-gray-500 focus:ring-1 px-2"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="phone" className="md:font-medium font-normal">
-                    Phone Number
-                  </label>
-                  <input
-                    type="number"
-                    name="phone"
-                    id="phone"
-                    className="outline-none border border-gray-500 pmd:x-3 py-1 rounded-md focus:ring-cardHoverColor focus:border-cardHoverColor ring-gray-500 focus:ring-1  px-2"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="address"
-                    className="md:font-medium font-normal"
-                  >
-                    Full Address
-                  </label>
-                  <input
-                    type="text"
-                    name="address"
-                    id="address"
-                    spellCheck="false"
-                    className="outline-none border border-gray-500 md:px-3 py-1 rounded-md focus:ring-cardHoverColor focus:border-cardHoverColor ring-gray-500 focus:ring-1 px-2"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="image" className="md:font-medium font-normal">
-                    Profile Image
-                  </label>
-                  <input
-                    type="file"
-                    id="address"
-                    className="cursor-pointer border border-gray-500 rounded-md focus:ring-cardHoverColor focus:border-cardHoverColor ring-gray-500 focus:ring-1"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="checkbox"
-                    id="agreement"
-                    className="accent-buttonColor size-4 mt-1 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="agreement"
-                    className="md:font-medium font-normal"
-                  >
-                    I have all terms and condition
-                  </label>
-                </div>
-                <div className="md:flex md:flex-row justify-between items-center text-center w-full flex-col">
-                  <div className=" md:w-[40%] mb-2 md:mb-0">
-                    <input
-                      type="submit"
-                      className="w-full bg-buttonColor py-1 rounded-md text-white font-medium cursor-pointer mt-2 hover:bg-transparent hover:text-buttonColor border border-buttonColor transition-all duration-300"
-                    />
+                  <div className="md:flex md:flex-row justify-between items-center text-center w-full flex-col">
+                    <div className=" md:w-[40%] mb-2 md:mb-0">
+                      <button
+                        type="submit"
+                        className="w-full bg-buttonColor py-1 rounded-md text-white font-medium cursor-pointer mt-2 hover:bg-transparent hover:text-buttonColor border border-buttonColor transition-all duration-300"
+                      >
+                        {isLoading ? "Loading ..." : "Submit"}
+                      </button>
+                    </div>
+                    <div>
+                      <Link
+                        to={"/login"}
+                        className=" text-cardHoverColor hover:underline cursor-pointer font-medium"
+                      >
+                        Sign In?
+                      </Link>
+                    </div>
                   </div>
-                  <div>
-                    <h1 className=" text-cardHoverColor hover:underline cursor-pointer font-medium">
-                      I have an account?
-                    </h1>
-                  </div>
-                </div>
-              </form>
+                </Form>
+              </Formik>
             </div>
           </div>
         </div>

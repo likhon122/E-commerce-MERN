@@ -46,7 +46,7 @@ const Register = () => {
       )}
       {isError && (
         <div className="flex items-center justify-center mt-4">
-          <AlertComponent color="error" message={errorMessage?.data.message} />
+          <AlertComponent color="error" message={errorMessage?.data?.message} />
         </div>
       )}
 

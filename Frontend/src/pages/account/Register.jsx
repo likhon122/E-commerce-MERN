@@ -35,6 +35,8 @@ const Register = () => {
       resetForm();
     }
   };
+
+  console.log(isSuccess, isError, registrationData, errorMessage);
   return (
     <>
       {isSuccess && (

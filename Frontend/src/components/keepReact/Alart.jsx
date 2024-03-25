@@ -2,7 +2,10 @@
 import { Alert } from "keep-react";
 import { useState } from "react";
 
-export const AlertComponent = ({ color, message }) => {
+export const AlertComponent = ({
+  color = "error",
+  message = "Something went Wrong!"
+}) => {
   const [hidden, setHidden] = useState(false);
   return (
     <Alert color={color} className={`${hidden ? "hidden" : ""}`}>

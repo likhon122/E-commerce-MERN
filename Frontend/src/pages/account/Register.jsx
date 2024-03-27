@@ -1,52 +1,74 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Form, Formik } from "formik";
 
 import { logo } from "../..";
-import { useRegisterUserMutation } from "../../features/FetchProductData";
 import CustomInput from "../../components/customInput/CustomInput";
 import { registrationFormValidation } from "../../validation/FormValidation";
 import CustomCheckBox from "../../components/customInput/CustomCheckBox";
 import { AlertComponent } from "../../components/keepReact/Alart";
-import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import axiosApiFetch from "../../api/apiConfig";
 
 const Register = () => {
-  const [
-    registerUserMutation,
-    {
-      isSuccess,
-      isLoading,
-      data: registrationData,
-      isError,
-      error: errorMessage
-    }
-  ] = useRegisterUserMutation();
+  const navigate = useNavigate();
+
+  const { isSuccess: successful } = useSelector(
+    (state) => state.verifyUserIsExist
+  );
+
+  const [registrationData, setRegistrationData] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState(null);
 
   const submitHandler = async (
-    { agreement, firstName, lastName, ...values },
+    { firstName, lastName, ...values },
     { resetForm }
   ) => {
     const name = firstName + " " + lastName;
 
     const userInfo = { name, ...values };
 
-    const data = await registerUserMutation(userInfo);
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      setError(null);
 
-    if (data?.data?.success) {
+      const data = await axiosApiFetch.post("/users/process-register", {
+        ...userInfo
+      });
+
+      setRegistrationData(data.data.message);
+
+      setIsSuccess(true);
       resetForm();
+      setIsLoading(false);
+    } catch (error) {
+      setIsSuccess(false);
+      setIsLoading(false);
+      setError(error.response.data.message);
+      setIsError(true);
     }
   };
 
-  console.log(isSuccess, isError, registrationData, errorMessage);
+  useEffect(() => {
+    if (successful) {
+      navigate("/");
+    }
+  }, [successful, navigate]);
+
   return (
     <>
       {isSuccess && (
         <div className="flex items-center justify-center mt-4">
-          <AlertComponent color="primary" message={registrationData?.message} />
+          <AlertComponent color="primary" message={registrationData} />
         </div>
       )}
       {isError && (
         <div className="flex items-center justify-center mt-4">
-          <AlertComponent color="error" message={errorMessage?.data?.message} />
+          <AlertComponent color="error" message={error} />
         </div>
       )}
 

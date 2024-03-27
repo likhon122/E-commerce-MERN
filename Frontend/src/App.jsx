@@ -11,8 +11,44 @@ import { Account, Blog, Cart, Home, NotFound, Wishlist } from "./index";
 import Products from "./pages/products/Products";
 import Login from "./pages/account/Login";
 import VerifyUser from "./pages/verifyUser/VerifyUser";
+import LogOut from "./pages/log-out/LogOut";
+import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import LoadingAnimation from "./components/LoadingAnimation/LoadingAnimation";
+import { verifyUserIsExist } from "./app/reducers/VerifyUserIsExist";
+import axiosApiFetch from "./api/apiConfig";
+import ForgotPassword from "./pages/forgotPassword/ForgotPassword";
+import ResetPassword from "./pages/forgotPassword/ResetPassword";
 
 function App() {
+  const dispatch = useDispatch();
+  const [isFetching, setIsFetching] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await axiosApiFetch.get("/auth/refresh-token");
+        const userInfo = await axiosApiFetch.get("/auth/protected");
+        if (userInfo.data.payload && userInfo.data.payload.user) {
+          dispatch(
+            verifyUserIsExist({
+              userInfo: userInfo.data.payload.user
+            })
+          );
+        }
+        setIsFetching(false);
+      } catch (error) {
+        setIsFetching(false);
+      }
+    })();
+  }, []);
+
+  if (isFetching) {
+    return (
+      <LoadingAnimation otherClass="h-[100vh]" classForSpinner="w-32 h-32" />
+    );
+  }
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
@@ -24,6 +60,12 @@ function App() {
         <Route path="wishlist" element={<Wishlist />} />
         <Route path="products" element={<Products />} />
         <Route path="api/users/verify/:token" element={<VerifyUser />} />
+        <Route
+          path="api/users/reset-password/:token"
+          element={<ResetPassword />}
+        />
+        <Route path="log-out" element={<LogOut />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )

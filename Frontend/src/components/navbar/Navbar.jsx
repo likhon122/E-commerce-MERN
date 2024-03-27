@@ -15,10 +15,21 @@ import { FaXmark } from "react-icons/fa6";
 
 import { logo } from "../../index";
 import NavLinks from "./NavLinks";
+import { AvatarComponent } from "../keepReact/Avatar";
+import { useSelector } from "react-redux";
+import ProfileInfo from "../../pages/account/ProfileInfo";
 
 const Navbar = () => {
+  const { userInfo, isSuccess } = useSelector(
+    (state) => state.verifyUserIsExist
+  );
+
+  console.log(userInfo);
+
   const [showNavbar, setShowNavbar] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+
+  const [openUserProfile, setOpenUserProfile] = useState(false);
 
   return (
     <header>
@@ -76,7 +87,8 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* bottom navbar  */}
+        {/* bottom navbar */}
+
         <div className="bg-white shadow-md shadow-gray-200">
           <div className="mx-[10%]  flex justify-between items-center h-[6vh]">
             <div>
@@ -107,7 +119,14 @@ const Navbar = () => {
             </div>
             <div>
               <div className="md:hidden block">
-                {showDetails ? (
+                {isSuccess ? (
+                  <div
+                    className="cursor-pointer border-buttonColor border-[2px] rounded-full -mr-5"
+                    onClick={() => setOpenUserProfile(!openUserProfile)}
+                  >
+                    <AvatarComponent path={userInfo.image} size="sm" />
+                  </div>
+                ) : showDetails ? (
                   <div className="p-[3px] border border-gray-500 rounded-md">
                     <FaXmark
                       className="text-xl cursor-pointer"
@@ -130,15 +149,6 @@ const Navbar = () => {
                 )}
               </div>
               <div className="md:flex justify-between items-center gap-2  sm:text-[13px] hidden lg:text-[17px]">
-                <Link to={"/register"}>
-                  <div className="flex justify-center items-center gap-1  cursor-pointer hover:text-cardHoverColor">
-                    <RiAccountPinBoxLine className="lg:text-xl text-[17px]" />
-                    <div>
-                      <h3 className="text-[18px]">Account</h3>
-                      <h3 className="text-[12px] -mt-2">Register/Login</h3>
-                    </div>
-                  </div>
-                </Link>
                 <Link to={"/wishlist"}>
                   <div className="flex justify-center items-center  gap-1 cursor-pointer hover:text-cardHoverColor">
                     <BsBookmarkHeartFill className="lg:text-xl text-[17px]" />
@@ -151,14 +161,37 @@ const Navbar = () => {
                     <h3 className="text-md">Cart</h3>
                   </div>
                 </Link>
+
+                {/* User is logged out and logged in handle */}
+                {isSuccess ? (
+                  <div
+                    title="Account"
+                    className="cursor-pointer border-buttonColor border-[2px] rounded-full p-1"
+                    onClick={() => setOpenUserProfile(!openUserProfile)}
+                  >
+                    <AvatarComponent path={userInfo.image} size="md" />
+                  </div>
+                ) : (
+                  <Link to={"/register"}>
+                    <div className="flex justify-center items-center gap-1  cursor-pointer hover:text-cardHoverColor">
+                      <RiAccountPinBoxLine className="lg:text-xl text-[17px]" />
+                      <div>
+                        <h3 className="text-[18px]">Account</h3>
+                        <h3 className="text-[12px] -mt-2">Register/Login</h3>
+                      </div>
+                    </div>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
         </div>
 
+        {/* When user is clicked by his account then this div is show */}
+
         {/* small size */}
 
-        {/* upper navbar for mobile size  */}
+        {/* upper navbar for user is logged out and logged in mobile size  */}
         <div className=" md:hidden overflow-x-hidden overflow-y-scroll ">
           <div
             className={`duration-700 transition-all absolute left-[-100%] w-full h-full pt-4 ${
@@ -189,38 +222,63 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/*Profile details for mobile size*/}
-        <div
-          className={`md:hidden absolute right-[45px]  rounded-md p-3 bg-gray-100 ${
-            showDetails ? "block" : "hidden"
-          }`}
-        >
-          <div className=" flex flex-col justify-start ">
-            <Link
-              to={"/register"}
-              onClick={() => setShowDetails(!showDetails)}
+        {/*Profile details for  user is logged in and logged out mobile size*/}
+        <div>
+          {isSuccess ? (
+            <div>
+              <div
+                className={`absolute right-0 2xl:w-[20%] xl:w-[30%] lg:w-[40%] md:w-[50%] w-full duration-500 ${
+                  openUserProfile ? "right-0 " : "right-[-100%]"
+                }`}
+              >
+                {openUserProfile && (
+                  <div className="min-h-screen bg-gray-50 w-full rounded-md">
+                    <ProfileInfo
+                      image={userInfo?.image}
+                      openUserProfile={openUserProfile}
+                      setOpenUserProfile={setOpenUserProfile}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div
+              className={`md:hidden absolute right-[45px]  rounded-md p-3 bg-gray-100 ${
+                showDetails ? "block" : "hidden"
+              }`}
             >
-              <div className="flex items-center gap-1 cursor-pointer mb-2 hover:text-cardHoverColor">
-                <RiAccountPinBoxLine className=" text-[18px] text-cardHoverColor" />
-                <div>
-                  <h3 className="text-md">Account</h3>
-                  <h3 className="text-[11px]">Register/Login</h3>
-                </div>
+              <div className=" flex flex-col justify-start ">
+                <Link
+                  to={"/register"}
+                  onClick={() => setShowDetails(!showDetails)}
+                >
+                  <div className="flex items-center gap-1 cursor-pointer mb-2 hover:text-cardHoverColor">
+                    <RiAccountPinBoxLine className=" text-[18px] text-cardHoverColor" />
+                    <div>
+                      <h3 className="text-md">Account</h3>
+                      <h3 className="text-[11px]">Register/Login</h3>
+                    </div>
+                  </div>
+                </Link>
+                <Link
+                  to={"/wishlist"}
+                  onClick={() => setShowDetails(!showDetails)}
+                >
+                  <div className="flex items-center  gap-1 cursor-pointer mb-2 hover:text-cardHoverColor">
+                    <BsBookmarkHeartFill className=" text-[14px] text-cardHoverColor" />
+                    <h3 className="text-md">Wishlist</h3>
+                  </div>
+                </Link>
+                <Link to={"/cart"} onClick={() => setShowDetails(!showDetails)}>
+                  <div className="flex  items-center gap-1 cursor-pointer mb-1 hover:text-cardHoverColor">
+                    <BsCart className=" text-[14px] text-cardHoverColor" />
+                    <h3 className="text-md">Cart</h3>
+                  </div>
+                </Link>
               </div>
-            </Link>
-            <Link to={"/wishlist"} onClick={() => setShowDetails(!showDetails)}>
-              <div className="flex items-center  gap-1 cursor-pointer mb-2 hover:text-cardHoverColor">
-                <BsBookmarkHeartFill className=" text-[14px] text-cardHoverColor" />
-                <h3 className="text-md">Wishlist</h3>
-              </div>
-            </Link>
-            <Link to={"/cart"} onClick={() => setShowDetails(!showDetails)}>
-              <div className="flex  items-center gap-1 cursor-pointer mb-1 hover:text-cardHoverColor">
-                <BsCart className=" text-[14px] text-cardHoverColor" />
-                <h3 className="text-md">Cart</h3>
-              </div>
-            </Link>
-          </div>
+            </div>
+          )}
         </div>
       </nav>
     </header>

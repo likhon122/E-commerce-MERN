@@ -17,8 +17,8 @@ const Footer = () => {
                   Get 10% of your first order!
                 </p>
               </div>
-              <div>
-                <form action="" className="flex relative">
+              <div className="">
+                <form action="" className="flex">
                   <input
                     type="email"
                     name=""
@@ -27,7 +27,7 @@ const Footer = () => {
                     placeholder="Email Here"
                     className="bg-transparent border-white border-2 px-2 py-1 mt-1 rounded-md w-[90%] text-white placeholder:text-white placeholder:focus:text-cardHoverColor outline-none focus:border-cardHoverColor"
                   />
-                  <IoIosSend className="absolute right-16 md:right-12 top-2 text-[25px] rotate-45 hover:rotate-12 hover:transition hover:duration-200 cursor-pointer" />
+                  <IoIosSend className="text-[25px] rotate-45 hover:rotate-12 hover:transition hover:duration-200 cursor-pointer" />
                 </form>
               </div>
             </div>

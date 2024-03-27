@@ -52,5 +52,28 @@ export const loginFormValidation = yup.object().shape({
       message:
         "Password must be at least one uppercase letter, one lowercase letter!"
     })
+    .required("Password is required!")
+});
+
+export const forgotPasswordValidation = yup.object().shape({
+  email: yup
+    .string()
+    .email("Please enter a valid email!")
+    .required("Email is required!")
+});
+
+export const resetPasswordValidation = yup.object().shape({
+  password: yup
+    .string("Password must be a string!")
+    .min(6, "Password must be at least 6 characters long!")
+    .max(16, "Please use password less then 16 characters long!")
+    .matches(passwordRules, {
+      message:
+        "Password must be at least one uppercase letter, one lowercase letter!"
+    })
     .required("Password is required!"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Password do't matched!")
+    .required("Confirm password is required!")
 });

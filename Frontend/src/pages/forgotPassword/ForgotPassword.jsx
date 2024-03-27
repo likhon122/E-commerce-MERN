@@ -1,23 +1,16 @@
 // import React from 'react'
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Form, Formik } from "formik";
 
 import { logo } from "../..";
-import { loginFormValidation } from "../../validation/FormValidation";
+import { forgotPasswordValidation } from "../../validation/FormValidation";
 import CustomInput from "../../components/customInput/CustomInput";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import axiosApiFetch from "../../api/apiConfig";
 import { AlertComponent } from "../../components/keepReact/Alart";
-import { verifyUserIsExist } from "../../app/reducers/VerifyUserIsExist";
+import { useState } from "react";
 
-const Login = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const { isSuccess } = useSelector((state) => state.verifyUserIsExist);
-
-  const [loginData, setLoginData] = useState("");
+const ForgotPassword = () => {
+  const [logOutMessage, setLogOutMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -25,28 +18,16 @@ const Login = () => {
 
   const handleSubmit = async (values) => {
     try {
+      console.log("submitted");
       setIsLoading(true);
       setIsError(false);
       setError(null);
-
-      const data = await axiosApiFetch.post("/auth/login", {
+      const data = await axiosApiFetch.post("/users/forget-password", {
         ...values
       });
 
-      setLoginData(data.data.message);
-
+      setLogOutMessage(data.data.message);
       setIsLoading(false);
-
-      console.log(data);
-
-      dispatch(
-        verifyUserIsExist({
-          userInfo: data.data.payload.loggedInUserInfo,
-          isError,
-          isFetching: isLoading,
-          isSuccess: true
-        })
-      );
       setSuccess(true);
     } catch (error) {
       setSuccess(false);
@@ -56,21 +37,11 @@ const Login = () => {
     }
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      navigate("/");
-    }
-
-    return () => {
-      clearTimeout();
-    };
-  }, [isSuccess, success, navigate]);
-
   return (
     <>
-      {success && loginData && (
+      {success && logOutMessage && (
         <div className="flex items-center justify-center mt-[60px] -mb-[60px]">
-          <AlertComponent color="success" message={loginData} />
+          <AlertComponent color="primary" message={logOutMessage} />
         </div>
       )}
       {isError && (
@@ -89,67 +60,37 @@ const Login = () => {
                   alt="logo"
                   className="h-full w-full max-h-20 max-w-20"
                 />
-                <h1 className="-ml-6 text-2xl font-bold">Login</h1>
+                <h1 className="-ml-6 text-2xl font-bold">Forgot Password</h1>
               </div>
             </div>
             <div className="">
               <Formik
                 initialValues={{
-                  email: "",
-                  password: ""
+                  email: ""
                 }}
-                validationSchema={loginFormValidation}
+                validationSchema={forgotPasswordValidation}
                 onSubmit={handleSubmit}
               >
                 <Form className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
                     <CustomInput type="email" name="email" label="Email" />
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <CustomInput
-                      type="password"
-                      name="password"
-                      label="Password"
-                    />
-                  </div>
-                  <div className="md:flex flex-col md:flex-row justify-between ">
-                    <div className="flex gap-2 mb-2 md:mb-0">
-                      <input
-                        type="checkbox"
-                        id="remember"
-                        className="accent-buttonColor size-4 mt-1 cursor-pointer"
-                      />
-                      <label
-                        htmlFor="remember"
-                        className="md:font-medium font-normal"
-                      >
-                        Remember me
-                      </label>
-                    </div>
-                    <div>
-                      <Link
-                        to={"/forgot-password"}
-                        className="text-cardHoverColor hover:underline cursor-pointer font-medium"
-                      >
-                        Forgot Password?
-                      </Link>
-                    </div>
-                  </div>
+
                   <div className="md:flex md:flex-row justify-between items-center text-center w-full flex-col">
                     <div className=" md:w-[40%] mb-2 md:mb-0">
                       <button
                         type="submit"
                         className="w-full bg-buttonColor py-1 rounded-md text-white font-medium cursor-pointer mt-2 hover:bg-transparent hover:text-buttonColor border border-buttonColor transition-all duration-300"
                       >
-                        {isLoading ? "Login..." : "Login"}
+                        {isLoading ? "Loading..." : "Forget"}
                       </button>
                     </div>
                     <div>
                       <Link
-                        to={"/register"}
+                        to={"/login"}
                         className=" text-cardHoverColor hover:underline cursor-pointer font-medium"
                       >
-                        Sign Up?
+                        Go to Login
                       </Link>
                     </div>
                   </div>
@@ -163,4 +104,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

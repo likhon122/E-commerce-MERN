@@ -1,33 +1,40 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useVerifyUserMutation } from "../../features/FetchProductData";
+// import { useVerifyUserMutation } from "../../features/FetchProductData";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 import { AlertComponent } from "../../components/keepReact/Alart";
 import SingleButton from "../../components/Buttons/SingleButton";
+import axiosApiFetch from "../../api/apiConfig";
 
 const VerifyUser = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const params = useParams();
   const token = params.token;
 
   const navigate = useNavigate();
-  const [verifyUser, { isLoading, isError, isSuccess }] =
-    useVerifyUserMutation();
-
-  const pageStart = isLoading || isError || isSuccess ? false : true;
-
-  const verifyUserAccount = async () => {
-    setTimeout(async () => {
-      if (token) {
-        console.log(token);
-        const data = await verifyUser({ token });
-        console.log(data);
-      }
-    }, 5000);
-  };
 
   useEffect(() => {
-    verifyUserAccount();
+    if (token) {
+      try {
+        setIsError(false);
+        setIsLoading(true);
+        const response = axiosApiFetch.post("/users/verify-user", { token });
+        console.log(response);
+        setIsSuccess(true);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+        setIsError(true);
+        setIsLoading(false);
+        setIsSuccess(false);
+      }
+    }
   }, []);
+
+  const pageStart = isLoading || isError || isSuccess ? false : true;
 
   return (
     <div className="min-h-[80vh]">

@@ -17,7 +17,7 @@ const {
 const { createJsonWebToken } = require("../helper/jsonwebtoken");
 const { jwtForgetPasswordKey, websiteURL, maxFileSize } = require("../secret");
 const {
-  emailVerifyWithNodemaler
+  emailVerifyWithNodemailer
 } = require("../helper/verifyEmailWithNodemaler");
 const { deleteImage } = require("../helper/deleteImage");
 
@@ -244,13 +244,13 @@ const forgetUserPassword = async (req, res, next) => {
       `
     };
     try {
-      await emailVerifyWithNodemaler(emailData);
+      await emailVerifyWithNodemailer(emailData);
     } catch (error) {
       throw error;
     }
     successResponse(res, {
       statusCode: 200,
-      message: "User password Forget successfully",
+      message: "Go to your Email and Forget your Password!",
       payload: { token }
     });
   } catch (error) {

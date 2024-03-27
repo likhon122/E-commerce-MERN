@@ -38,14 +38,14 @@ const userLogin = async (req, res, next) => {
 
     // delete user.password;
 
-    const userWithoutPassword = user.toObject();
+    const loggedInUserInfo = user.toObject();
 
-    delete userWithoutPassword.password;
+    delete loggedInUserInfo.password;
 
     successResponse(res, {
       statusCode: 200,
       message: "User is logged in successfully",
-      payload: { userWithoutPassword }
+      payload: { loggedInUserInfo }
     });
   } catch (error) {
     next(error);
@@ -118,11 +118,16 @@ const protectedRoute = async (req, res, next) => {
         "Refresh token is invalid. Please send a valid refresh token!"
       );
     }
+    // delete user credential information
+
+    delete decodedRefreshToken.user.password;
+    delete decodedRefreshToken.user.phone;
+
     successResponse(res, {
       statusCode: 200,
       message:
         "User verify successful.Please access the user for all protected route.",
-      payload: {}
+      payload: { ...decodedRefreshToken }
     });
   } catch (error) {
     next(error);

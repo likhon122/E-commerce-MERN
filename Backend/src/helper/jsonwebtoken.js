@@ -27,9 +27,9 @@ const createAccessToken = (res, user) => {
     try {
       res.cookie("accessToken", accessToken, {
         maxAge: 15 * 60 * 1000, // 15m
-        httpOnly: true
-        // secure: true,
-        // sameSite: "none"
+        httpOnly: true,
+        secure: true,
+        sameSite: "none"
       });
     } catch (error) {
       throw error;
@@ -44,9 +44,9 @@ const createRefreshToken = (res, user) => {
     try {
       res.cookie("refreshToken", refreshToken, {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
-        httpOnly: true
-        // secure: true,
-        // sameSite: "none"
+        httpOnly: true,
+        secure: true,
+        sameSite: "none"
       });
     } catch (error) {
       throw error;

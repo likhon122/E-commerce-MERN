@@ -29,7 +29,9 @@ function App() {
       try {
         await axiosApiFetch.get("/auth/refresh-token");
         const userInfo = await axiosApiFetch.get("/auth/protected");
+        console.log(userInfo);
         if (userInfo.data.payload && userInfo.data.payload.user) {
+          console.log("dispatch ");
           dispatch(
             verifyUserIsExist({
               userInfo: userInfo.data.payload.user
@@ -39,6 +41,7 @@ function App() {
         setIsFetching(false);
       } catch (error) {
         setIsFetching(false);
+        console.log(error);
       }
     })();
   }, []);

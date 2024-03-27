@@ -24,6 +24,8 @@ const Navbar = () => {
     (state) => state.verifyUserIsExist
   );
 
+  console.log(userInfo, isSuccess);
+
   console.log(userInfo);
 
   const [showNavbar, setShowNavbar] = useState(false);

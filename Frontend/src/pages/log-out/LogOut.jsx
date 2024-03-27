@@ -17,7 +17,7 @@ const LogOut = () => {
       await axiosApiFetch.post("/auth/logout");
       dispatch(logOut());
       setIsLoading(false);
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.log(error);
     }

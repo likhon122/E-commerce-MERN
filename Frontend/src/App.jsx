@@ -27,6 +27,7 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
+        console.log("app");
         await axiosApiFetch.get("/auth/refresh-token");
         const userInfo = await axiosApiFetch.get("/auth/protected");
         console.log(userInfo);

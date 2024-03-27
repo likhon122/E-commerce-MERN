@@ -61,8 +61,17 @@ const userLogout = async (req, res, next) => {
     if (!refreshToken) {
       throw createError(401, "Access token is not found. Please login first!");
     }
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"
+    });
     successResponse(res, {
       statusCode: 200,
       message: "User is logged out successfully",
@@ -90,6 +99,7 @@ const refreshTokenRoute = async (req, res, next) => {
     }
 
     createAccessToken(res, decodedRefreshToken.user);
+
     successResponse(res, {
       statusCode: 200,
       message: "Access Token created Successfully",

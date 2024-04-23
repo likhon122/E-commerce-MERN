@@ -15,13 +15,13 @@ const { categoryRouter } = require("./routes/category.route");
 const { productRouter } = require("./routes/product.route");
 
 const app = express();
-const limitter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1m
-  limit: 20,
-  message: "Too may request for this ip! Please try again Later."
-});
+// const limitter = rateLimit({
+//   windowMs: 1 * 60 * 1000, // 1m
+//   limit: 20,
+//   message: "Too may request for this ip! Please try again Later."
+// });
 
-app.use(limitter);
+// app.use(limitter);
 app.use(xssClean());
 app.use(morgan("dev"));
 app.use(cookieParser());

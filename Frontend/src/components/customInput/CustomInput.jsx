@@ -5,7 +5,6 @@ import { useField } from "formik";
 // eslint-disable-next-line react/prop-types
 const CustomInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
-  console.log();
   return (
     <>
       <label htmlFor={props.name} className="md:font-medium font-normal">

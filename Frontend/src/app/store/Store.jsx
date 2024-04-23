@@ -1,10 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-
-import HomeReducer from "../reducers/VerifyUserIsExist";
+// import verifyUserReducer from "../reducers/VerifyUserExistSlice";
+import AuthReducer from "../features/AuthSlice";
+import ProfileReducer from "../features/ProfileSlice";
 
 const store = configureStore({
   reducer: {
-    verifyUserIsExist: HomeReducer
+    auth: AuthReducer,
+    // verifyUser: verifyUserReducer,
+    profile: ProfileReducer
   }
 });
 

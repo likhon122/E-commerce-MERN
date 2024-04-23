@@ -28,7 +28,7 @@ const processRegister = async (req, res, next) => {
       return next(createError(400, "Invalid input data"));
     }
 
-    console.log(req.file);
+    // console.log(req.file);
     const image = req.file;
     // console.log(image);
     // services folder userService file -> processRegisterUserService function
@@ -154,7 +154,16 @@ const updateUser = async (req, res, next) => {
     const updates = {};
 
     for (const key in req.body) {
-      if (["name", "phone", "password", "address"].includes(key)) {
+      if (
+        [
+          "name",
+          "phone",
+          "oldPassword",
+          "newPassword",
+          "confirmPassword",
+          "address"
+        ].includes(key)
+      ) {
         updates[key] = req.body[key];
       }
     }

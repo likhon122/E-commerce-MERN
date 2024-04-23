@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "public/images/userImage/default.png"
+      default: "/images/userImage/default.png"
     },
     isAdmin: {
       type: Boolean,

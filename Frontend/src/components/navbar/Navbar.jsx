@@ -16,22 +16,27 @@ import { FaXmark } from "react-icons/fa6";
 import { logo } from "../../index";
 import NavLinks from "./NavLinks";
 import { AvatarComponent } from "../keepReact/Avatar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProfileInfo from "../../pages/account/ProfileInfo";
+import { getUserDetails } from "../../app/features/ProfileSlice";
 
 const Navbar = () => {
-  const { userInfo, isSuccess } = useSelector(
-    (state) => state.verifyUserIsExist
+  const { userInfo, isError, isLoggedIn } = useSelector((state) => state.auth);
+  const { userInfo: loginUserInfo, isSuccess } = useSelector(
+    (state) => state.profile
   );
 
-  console.log(userInfo, isSuccess);
-
-  console.log(userInfo);
+  console.log(loginUserInfo);
 
   const [showNavbar, setShowNavbar] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-
   const [openUserProfile, setOpenUserProfile] = useState(false);
+
+  const dispatch = useDispatch();
+
+  // if (openUserProfile) {
+
+  // }
 
   return (
     <header>
@@ -121,10 +126,12 @@ const Navbar = () => {
             </div>
             <div>
               <div className="md:hidden block">
-                {isSuccess ? (
+                {isLoggedIn ? (
                   <div
                     className="cursor-pointer border-buttonColor border-[2px] rounded-full -mr-5"
-                    onClick={() => setOpenUserProfile(!openUserProfile)}
+                    onClick={() => {
+                      setOpenUserProfile(!openUserProfile);
+                    }}
                   >
                     <AvatarComponent path={userInfo.image} size="sm" />
                   </div>
@@ -165,11 +172,16 @@ const Navbar = () => {
                 </Link>
 
                 {/* User is logged out and logged in handle */}
-                {isSuccess ? (
+                {isLoggedIn ? (
                   <div
                     title="Account"
                     className="cursor-pointer border-buttonColor border-[2px] rounded-full p-1"
-                    onClick={() => setOpenUserProfile(!openUserProfile)}
+                    onClick={() => {
+                      setOpenUserProfile(!openUserProfile);
+                      if (!isSuccess) {
+                        dispatch(getUserDetails(userInfo._id));
+                      }
+                    }}
                   >
                     <AvatarComponent path={userInfo.image} size="md" />
                   </div>
@@ -226,7 +238,7 @@ const Navbar = () => {
 
         {/*Profile details for  user is logged in and logged out mobile size*/}
         <div>
-          {isSuccess ? (
+          {isLoggedIn ? (
             <div>
               <div
                 className={`absolute right-0 2xl:w-[20%] xl:w-[30%] lg:w-[40%] md:w-[50%] w-full duration-500 ${
@@ -236,9 +248,9 @@ const Navbar = () => {
                 {openUserProfile && (
                   <div className="min-h-screen bg-gray-50 w-full rounded-md">
                     <ProfileInfo
-                      image={userInfo?.image}
                       openUserProfile={openUserProfile}
                       setOpenUserProfile={setOpenUserProfile}
+                      userInfo={loginUserInfo}
                     />
                   </div>
                 )}

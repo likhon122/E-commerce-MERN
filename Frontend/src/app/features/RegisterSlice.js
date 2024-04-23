@@ -2,13 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import { logo } from "../..";
 
 const initialState = {
-  firstName: "",
-  lastName: "",
-  phone: "",
-  address: "",
-  password: "",
-  image: logo
+  user: {},
+  isLoading: false,
+  isError: false,
+  error: null
 };
+
+// const verifyUserIs
 
 const registrationSlice = createSlice({
   name: "registration",

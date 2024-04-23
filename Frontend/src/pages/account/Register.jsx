@@ -6,69 +6,53 @@ import CustomInput from "../../components/customInput/CustomInput";
 import { registrationFormValidation } from "../../validation/FormValidation";
 import CustomCheckBox from "../../components/customInput/CustomCheckBox";
 import { AlertComponent } from "../../components/keepReact/Alart";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import axiosApiFetch from "../../api/apiConfig";
+import { registerUser } from "../../app/features/AuthSlice";
 
 const Register = () => {
+  const {
+    isLoggedIn,
+    registrationMessage,
+    registrationErrorMessage,
+    isLoading,
+    resetFormData
+  } = useSelector((state) => state.auth);
+
   const navigate = useNavigate();
 
-  const { isSuccess: successful } = useSelector(
-    (state) => state.verifyUserIsExist
-  );
+  const dispatch = useDispatch();
 
-  const [registrationData, setRegistrationData] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState(null);
-
-  const submitHandler = async (
-    { firstName, lastName, ...values },
-    { resetForm }
-  ) => {
+  const submitHandler = ({ firstName, lastName, ...values }, { resetForm }) => {
     const name = firstName + " " + lastName;
 
     const userInfo = { name, ...values };
 
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      setError(null);
+    dispatch(registerUser(userInfo));
 
-      const data = await axiosApiFetch.post("/users/process-register", {
-        ...userInfo
-      });
-
-      setRegistrationData(data.data.message);
-
-      setIsSuccess(true);
-      resetForm();
-      setIsLoading(false);
-    } catch (error) {
-      setIsSuccess(false);
-      setIsLoading(false);
-      setError(error.response.data.message);
-      setIsError(true);
-    }
+    // if (resetFormData) {
+    //   console.log(registrationMessage);
+    //   resetForm();
+    // }
   };
 
   useEffect(() => {
-    if (successful) {
+    if (isLoggedIn) {
       navigate("/");
     }
-  }, [successful, navigate]);
+  }, [navigate, isLoggedIn]);
 
   return (
     <>
-      {isSuccess && (
+      {!registrationErrorMessage && registrationMessage && (
         <div className="flex items-center justify-center mt-4">
-          <AlertComponent color="primary" message={registrationData} />
+          <AlertComponent color="primary" message={registrationMessage} />
         </div>
       )}
-      {isError && (
+      {!registrationMessage && registrationErrorMessage && (
         <div className="flex items-center justify-center mt-4">
-          <AlertComponent color="error" message={error} />
+          <AlertComponent color="error" message={registrationErrorMessage} />
         </div>
       )}
 

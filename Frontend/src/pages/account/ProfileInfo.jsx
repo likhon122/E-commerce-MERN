@@ -17,10 +17,11 @@ import { useState } from "react";
 import { ModalComponent } from "../../components/keepReact/CheckPermission";
 
 const ProfileInfo = ({
-  image = "",
   openUserProfile = false,
-  setOpenUserProfile
+  setOpenUserProfile,
+  userInfo
 }) => {
+  console.log(userInfo);
   const [showPermission, setShowPermission] = useState(false);
   const handleClick = () => {
     setOpenUserProfile(!openUserProfile);
@@ -46,7 +47,7 @@ const ProfileInfo = ({
               className="hover:bg-gray-200 cursor-pointer transition-all duration-300 px-2"
               onClick={handleClick}
             >
-              <Link to={"/profile/id"}>
+              <Link to={`/profile/${userInfo._id}`}>
                 <Sidebar.Item>
                   <SquaresFour size={24} />
                   <h1 className="text-[15px] md:text-[16px]">Profile</h1>
@@ -125,20 +126,14 @@ const ProfileInfo = ({
         <Divider className="my-3" />
         <Sidebar.Footer className="flex items-center gap-2">
           <div>
-            <Avatar shape="circle" img={image} />
+            <Avatar shape="circle" img={userInfo.image} />
           </div>
           <div>
             <Typography
               variant="p"
               className="mb-0 md:text-body-2 text-body-3 font-medium text-metal-600 "
             >
-              Md Ariful Islam
-            </Typography>
-            <Typography
-              variant="p"
-              className="text-body-4 md:text-body-2 font-normal text-metal-400"
-            >
-              Web Developer
+              {userInfo.name}
             </Typography>
           </div>
         </Sidebar.Footer>

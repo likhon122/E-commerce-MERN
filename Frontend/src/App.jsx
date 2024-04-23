@@ -4,7 +4,6 @@ import {
   createBrowserRouter,
   createRoutesFromElements
 } from "react-router-dom";
-import "./App.css";
 
 import Layout from "./Layout";
 import { Account, Blog, Cart, Home, NotFound, Wishlist } from "./index";
@@ -13,46 +12,27 @@ import Login from "./pages/account/Login";
 import VerifyUser from "./pages/verifyUser/VerifyUser";
 import LogOut from "./pages/log-out/LogOut";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
-import LoadingAnimation from "./components/LoadingAnimation/LoadingAnimation";
-import { verifyUserIsExist } from "./app/reducers/VerifyUserIsExist";
-import axiosApiFetch from "./api/apiConfig";
+import { useEffect } from "react";
+
 import ForgotPassword from "./pages/forgotPassword/ForgotPassword";
 import ResetPassword from "./pages/forgotPassword/ResetPassword";
+import { verifyUserIsExist } from "./app/features/AuthSlice";
+import Profile from "./pages/account/profile/Profile";
+// import LoadingAnimation from "./components/LoadingAnimation/LoadingAnimation";
 
 function App() {
+  // const { isLoading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      try {
-        console.log("app");
-        await axiosApiFetch.get("/auth/refresh-token");
-        const userInfo = await axiosApiFetch.get("/auth/protected");
-        console.log(userInfo);
-        if (userInfo.data.payload && userInfo.data.payload.user) {
-          console.log("dispatch ");
-          dispatch(
-            verifyUserIsExist({
-              userInfo: userInfo.data.payload.user
-            })
-          );
-        }
-        setIsFetching(false);
-      } catch (error) {
-        setIsFetching(false);
-        console.log(error);
-      }
-    })();
-  }, []);
+    dispatch(verifyUserIsExist());
+  }, [dispatch]);
 
-  if (isFetching) {
-    return (
-      <LoadingAnimation otherClass="h-[100vh]" classForSpinner="w-32 h-32" />
-    );
-  }
-
+  // if (isLoading) {
+  //   return (
+  //     <LoadingAnimation otherClass="h-[100vh]" classForSpinner="w-32 h-32" />
+  //   );
+  // }
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
@@ -70,6 +50,7 @@ function App() {
         />
         <Route path="log-out" element={<LogOut />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="profile/:id" element={<Profile />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )

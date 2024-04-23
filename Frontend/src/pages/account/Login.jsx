@@ -9,73 +9,76 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import axiosApiFetch from "../../api/apiConfig";
 import { AlertComponent } from "../../components/keepReact/Alart";
-import { verifyUserIsExist } from "../../app/reducers/VerifyUserIsExist";
+import { loginUser, verifyUserIsExist } from "../../app/features/AuthSlice";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isSuccess } = useSelector((state) => state.verifyUserIsExist);
+  const { isLoggedIn, loginError, isLoading } = useSelector(
+    (state) => state.auth
+  );
 
-  const [loginData, setLoginData] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(null);
+
+
+  // const [loginData, setLoginData] = useState("");
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [isError, setIsError] = useState(false);
+  // const [success, setSuccess] = useState(false);
+  // const [error, setError] = useState(null);
 
   const handleSubmit = async (values) => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      setError(null);
+    dispatch(loginUser({ ...values }));
 
-      const data = await axiosApiFetch.post("/auth/login", {
-        ...values
-      });
+    // try {
+    //   setIsLoading(true);
+    //   setIsError(false);
+    //   setError(null);
 
-      setLoginData(data.data.message);
+    //   const data = await axiosApiFetch.post("/auth/login", {
+    //     ...values
+    //   });
 
-      setIsLoading(false);
+    //   setLoginData(data.data.message);
 
-      console.log(data);
-
-      dispatch(
-        verifyUserIsExist({
-          userInfo: data.data.payload.loggedInUserInfo,
-          isError,
-          isFetching: isLoading,
-          isSuccess: true
-        })
-      );
-      setSuccess(true);
-    } catch (error) {
-      setSuccess(false);
-      setIsLoading(false);
-      setError(error.response.data.message);
-      setIsError(true);
-    }
+    //   setIsLoading(false);
+    //   dispatch(verifyUserIsExist());
+    //   dispatch(
+    //     login({
+    //       userInfo: data.data.payload.loggedInUserInfo,
+    //       isError,
+    //       isFetching: isLoading,
+    //       isSuccess: true
+    //     })
+    //   );
+    //   setSuccess(true);
+    // } catch (error) {
+    //   setSuccess(false);
+    //   setIsLoading(false);
+    //   setError(error.response.data.message);
+    //   setIsError(true);
+    // }
   };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isLoggedIn) {
       navigate("/");
     }
-
-    return () => {
-      clearTimeout();
-    };
-  }, [isSuccess, success, navigate]);
+  }, [isLoggedIn, navigate]);
 
   return (
     <>
-      {success && loginData && (
+      {isLoggedIn && (
         <div className="flex items-center justify-center mt-[60px] -mb-[60px]">
-          <AlertComponent color="success" message={loginData} />
+          <AlertComponent
+            color="success"
+            message={"User LoggedIn successfully!"}
+          />
         </div>
       )}
-      {isError && (
+      {!isLoggedIn && loginError && (
         <div className="flex items-center justify-center mt-[60px] -mb-[60px]">
-          <AlertComponent color="error" message={error} />
+          <AlertComponent color="error" message={loginError} />
         </div>
       )}
 

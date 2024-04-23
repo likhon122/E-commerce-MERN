@@ -153,9 +153,49 @@ const updateUserService = async (userId, image, updates) => {
       runValidators: true,
       context: "query"
     };
-    const updateUserInfo = updates;
-    const options = { password: 0 };
-    const user = await findWithId(userId, User, options);
+
+    let updateUserInfo = updates;
+    const user = await findWithId(userId, User);
+
+    if (!updateUserInfo.oldPassword) {
+      throw createError(
+        400,
+        "User Old Password is Missing please enter Old Password to any change data!!"
+      );
+    }
+    // check user old Password or database password is matched
+    const userPassword = await bcrypt.compare(
+      updateUserInfo.oldPassword,
+      user.password
+    );
+
+    if (!userPassword) {
+      throw createError("User old Password do not matched!");
+    }
+
+    if (updateUserInfo.newPassword) {
+      // check user newPassword or old password are not same
+      if (updateUserInfo.oldPassword === updateUserInfo.newPassword) {
+        throw createError(
+          400,
+          "User Old Password or New Password is same please select another password and try again!"
+        );
+      }
+
+      if (!updateUserInfo.confirmPassword) {
+        throw createError(
+          400,
+          "Confirmed Password is missing please enter confirm password to change old password !"
+        );
+      }
+      if (updateUserInfo.newPassword !== updateUserInfo.confirmPassword) {
+        // check user newPassword or confirmed password are same
+        throw createError(
+          400,
+          "Confirm Password or New Password are don't matched"
+        );
+      }
+    }
 
     if (image) {
       if (image.size > 1024 * 1024 * 2) {
@@ -164,7 +204,7 @@ const updateUserService = async (userId, image, updates) => {
           "Image size too large. Please select less then 2mb image."
         );
       }
-      if (user.image === "public/images/userImage/default.png") {
+      if (user.image === "/images/userImage/default.png") {
         const response = await cloudinary.uploader.upload(image.path, {
           folder: "e-commerce-mern/users"
         });
@@ -186,11 +226,21 @@ const updateUserService = async (userId, image, updates) => {
       }
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
+    delete updateUserInfo.oldPassword;
+    delete updateUserInfo.confirmPassword;
+
+    if (updateUserInfo.newPassword) {
+      updateUserInfo.password = updateUserInfo.newPassword;
+    }
+    // delete updateUserInfo.newPassword;
+    console.log(updateUserInfo);
+    const updatedUserWithPassword = await User.findByIdAndUpdate(
       userId,
-      updates,
+      updateUserInfo,
       updateOptions
     );
+    const updatedUser = updatedUserWithPassword.toObject();
+    delete updatedUser.password;
     return updatedUser;
   } catch (error) {
     throw error;

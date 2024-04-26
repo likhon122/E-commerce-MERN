@@ -26,24 +26,18 @@ const Navbar = () => {
     (state) => state.profile
   );
 
-  console.log(loginUserInfo);
-
   const [showNavbar, setShowNavbar] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [openUserProfile, setOpenUserProfile] = useState(false);
 
   const dispatch = useDispatch();
 
-  // if (openUserProfile) {
-
-  // }
-
   return (
     <header>
       <nav>
         {/* upper Navbar */}
         <div className="bg-white shadow-md shadow-gray-200 mb-1">
-          <div className="flex items-center justify-between h-[5vh] md:mx-[15%] mx-[10%]">
+          <div className="flex items-center justify-between h-[5vh] md:mx-[10%] mx-[10%]">
             <div className="">
               <div className="md:hidden block cursor-pointer">
                 {showNavbar ? (
@@ -51,6 +45,7 @@ const Navbar = () => {
                     className="text-xl"
                     onClick={() => {
                       setShowNavbar(!showNavbar);
+
                       showDetails && setShowDetails(!showDetails);
                     }}
                   />
@@ -59,6 +54,7 @@ const Navbar = () => {
                     className="text-xl "
                     onClick={() => {
                       setShowNavbar(!showNavbar);
+                      setOpenUserProfile(false);
                       showDetails && setShowDetails(!showDetails);
                     }}
                   />
@@ -131,6 +127,7 @@ const Navbar = () => {
                     className="cursor-pointer border-buttonColor border-[2px] rounded-full -mr-5"
                     onClick={() => {
                       setOpenUserProfile(!openUserProfile);
+                      setShowNavbar(false);
                     }}
                   >
                     <AvatarComponent path={userInfo.image} size="sm" />
@@ -178,6 +175,7 @@ const Navbar = () => {
                     className="cursor-pointer border-buttonColor border-[2px] rounded-full p-1"
                     onClick={() => {
                       setOpenUserProfile(!openUserProfile);
+
                       if (!isSuccess) {
                         dispatch(getUserDetails(userInfo._id));
                       }
@@ -208,7 +206,7 @@ const Navbar = () => {
         {/* upper navbar for user is logged out and logged in mobile size  */}
         <div className=" md:hidden overflow-x-hidden overflow-y-scroll ">
           <div
-            className={`duration-700 transition-all absolute left-[-100%] w-full h-full pt-4 ${
+            className={`duration-700 transition-all absolute left-[-100%] w-full h-full pt-4 z-[99] ${
               showNavbar && "left-[0] bg-gray-100 "
             }`}
           >
@@ -239,14 +237,15 @@ const Navbar = () => {
         {/*Profile details for  user is logged in and logged out mobile size*/}
         <div>
           {isLoggedIn ? (
-            <div>
+            <div className="overflow-x-hidden">
               <div
-                className={`absolute right-0 2xl:w-[20%] xl:w-[30%] lg:w-[40%] md:w-[50%] w-full duration-500 ${
-                  openUserProfile ? "right-0 " : "right-[-100%]"
+                className={`absolute h-full z-[99] right-[-100%]  ${
+                  openUserProfile &&
+                  "right-[0] bg-gray-50 duration-700 transition-all ease-in-out"
                 }`}
               >
                 {openUserProfile && (
-                  <div className="min-h-screen bg-gray-50 w-full rounded-md">
+                  <div className="min-h-screen bg-gray-50 w-full rounded-md ">
                     <ProfileInfo
                       openUserProfile={openUserProfile}
                       setOpenUserProfile={setOpenUserProfile}
@@ -258,7 +257,7 @@ const Navbar = () => {
             </div>
           ) : (
             <div
-              className={`md:hidden absolute right-[45px]  rounded-md p-3 bg-gray-100 ${
+              className={`md:hidden absolute right-[45px]  rounded-md p-3 bg-gray-100 z-[99] ${
                 showDetails ? "block" : "hidden"
               }`}
             >

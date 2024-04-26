@@ -34,9 +34,9 @@ const MyProfile = ({ userInfo }) => {
   const [successMessage, setSuccessMessage] = useState(null);
 
   const submitHandler = ({ firstName, lastName, ...values }, { resetForm }) => {
-    if (resetFormData) {
-      setResetFormData(false);
-      // resetForm();
+    if (resetFormData || isSuccess) {
+      console.log("first");
+      resetForm();
     }
     const name = firstName + " " + lastName;
     const userInfo = { id, name, ...values };
@@ -47,24 +47,38 @@ const MyProfile = ({ userInfo }) => {
     if (userInfo.confirmPassword == "") {
       delete userInfo.confirmPassword;
     }
-    console.log(userInfo);
-    dispatch(updateUserDetails(userInfo));
+    if (!resetFormData) {
+      dispatch(updateUserDetails(userInfo));
+    }
+  };
+
+  const clearForm = () => {
+    setResetFormData(true);
+    submitHandler();
   };
 
   useEffect(() => {
-    if (updateError || updateSuccess) {
+    if (updateError && !updateSuccess) {
       setErrorMessage(updateError);
+      const timeout = setTimeout(() => {
+        setErrorMessage(null);
+        dispatch(showMessage());
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+    if (!updateError && updateSuccess) {
       setSuccessMessage(isSuccess);
 
       const timeout = setTimeout(() => {
-        setErrorMessage(null);
         setSuccessMessage(null);
         dispatch(showMessage());
-      }, 3000); // Clear messages after 3 seconds
+      }, 3000);
 
       return () => clearTimeout(timeout);
     }
   }, [updateError, updateSuccess, dispatch, isSuccess]);
+
   return (
     <div>
       <div>
@@ -73,9 +87,11 @@ const MyProfile = ({ userInfo }) => {
         )}
         {errorMessage && <AlertComponent color="error" message={updateError} />}
       </div>
-      <div>
-        <div>
-          <h1>Edit Profile</h1>
+      <div className=" p-5 rounded-md shadow-md bg-gray-50">
+        <div className="my-2 w-fit mr-2">
+          <h1 className="text-xl font-[500] border-b border-buttonColor pb-[2px]">
+            Edit Your Profile
+          </h1>
         </div>
         <div>
           <div className="">
@@ -83,17 +99,20 @@ const MyProfile = ({ userInfo }) => {
               initialValues={{
                 firstName: firstName,
                 lastName: lastName,
-                email: userInfo.email,
+                phone: userInfo.phone,
                 address: userInfo.address,
                 oldPassword: "",
                 newPassword: "",
                 confirmPassword: ""
               }}
               validationSchema={updateProfileValidation}
-              onSubmit={submitHandler}
+              onSubmit={(e, { resetForm }) => {
+                console.log(e);
+                resetForm();
+              }}
             >
               <Form className="flex flex-col gap-3">
-                <div className="md:flex md:justify-between md:items-center gap-2 ">
+                <div className="md:flex md:justify-between md:items-center gap-2 flex-col lg:flex-row ">
                   <div className="flex flex-col gap-1 w-full">
                     <CustomInput
                       label="First Name"
@@ -110,9 +129,9 @@ const MyProfile = ({ userInfo }) => {
                     />
                   </div>
                 </div>
-                <div className="md:flex md:justify-between md:items-center gap-2 ">
+                <div className="md:flex md:justify-between md:items-center gap-2 flex-col lg:flex-row">
                   <div className="flex flex-col gap-1 w-full">
-                    <CustomInput label="Email" name="email" type="email" />
+                    <CustomInput label="Phone" name="phone" type="tel" />
                   </div>
                   <div className="flex flex-col gap-1 w-full">
                     <CustomInput label="Address" name="address" type="text" />
@@ -140,21 +159,20 @@ const MyProfile = ({ userInfo }) => {
                   />
                 </div>
 
-                <div className="md:flex md:flex-row justify-between items-center text-center w-full flex-col">
-                  <div className=" md:w-[40%] mb-2 md:mb-0">
+                <div className="md:flex md:flex-row justify-center items-center text-center w-full flex-col ">
+                  <div className=" mb-2 md:mb-0 flex justify-between  flex-col md:flex-row w-[90%]">
                     <button
                       type="submit"
-                      className="w-full bg-buttonColor py-1 rounded-md text-white font-medium cursor-pointer mt-2 hover:bg-transparent hover:text-buttonColor border border-buttonColor transition-all duration-300"
-                      onClick={(e) => setResetFormData(true)}
+                      className=" w-[130px] bg-transparent py-1 rounded-md text-buttonColor font-medium cursor-pointer mt-2 hover:bg-buttonColor hover:text-white border border-buttonColor transition-all duration-300"
+                      onClick={clearForm}
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="w-full bg-buttonColor py-1 rounded-md text-white font-medium cursor-pointer mt-2 hover:bg-transparent hover:text-buttonColor border border-buttonColor transition-all duration-300"
+                      className=" w-[130px] bg-buttonColor py-1 rounded-md text-white font-medium cursor-pointer mt-2 hover:bg-transparent hover:text-buttonColor border border-buttonColor transition-all duration-300"
                     >
-                      {/* {updateLoading ? "Loading ..." : "Save Changes"} */}
-                      save Changes
+                      {updateLoading ? "Loading ..." : "Save Changes"}
                     </button>
                   </div>
                 </div>

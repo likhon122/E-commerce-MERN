@@ -21,7 +21,6 @@ const ProfileInfo = ({
   setOpenUserProfile,
   userInfo
 }) => {
-  console.log(userInfo);
   const [showPermission, setShowPermission] = useState(false);
   const handleClick = () => {
     setOpenUserProfile(!openUserProfile);

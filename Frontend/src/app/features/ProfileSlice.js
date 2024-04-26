@@ -14,7 +14,6 @@ const initialState = {
 
 const updateUser = async ({ id, ...userInfo }) => {
   try {
-    console.log(userInfo);
     const response = await axiosApiFetch.put(`/users/${id}`, userInfo);
     return response.data.payload.updatedUser;
   } catch (error) {
@@ -85,8 +84,8 @@ const profileSlice = createSlice({
   },
   reducers: {
     showMessage: (state, action) => {
-      state.updateSuccess = false;
-      state.updateError = null;
+      if (state.updateSuccess) state.updateSuccess = false;
+      if (state.updateError) state.updateError = null;
     }
   }
 });

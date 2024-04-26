@@ -91,10 +91,11 @@ export const updateProfileValidation = yup.object().shape({
     .string()
     .min(2, "Last name must be at least 2 characters long!")
     .required("Last name is required!"),
-  email: yup
+  phone: yup
     .string()
-    .email("Please enter a valid email!")
-    .required("Email is required!"),
+    .min(11, "Bangladeshi all phone number is 11 characters long!")
+    .max(11, "Bangladeshi all phone number is 11 characters long!")
+    .required("Phone number is required!"),
   address: yup
     .string()
     .min(2, "Address name must be at least 2 characters long!")

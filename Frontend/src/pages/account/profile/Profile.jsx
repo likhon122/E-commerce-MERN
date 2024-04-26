@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getUserDetails } from "../../../app/features/ProfileSlice";
 import LoadingAnimation from "../../../components/LoadingAnimation/LoadingAnimation";
 import MyProfile from "./MyProfile";
+import { DropdownComponent } from "../../../components/keepReact/Dropdown";
 
 const links = [
   {
@@ -25,14 +26,8 @@ const Profile = () => {
 
   const [clickedValue, setClickedValue] = useState("My Profile");
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
-  const params = useParams();
-  // const id = params.id;
 
   useEffect(() => {
-    // if (id && !isSuccess) {
-    //   dispatch(getUserDetails(id));
-    // }
     if (!isLoggedIn) {
       navigate("/");
     }
@@ -66,7 +61,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen mx-[10%] mt-10 ">
-      <div className=" grid md:grid-cols-[20%_minmax(0px,_1fr)] grid-cols-[0%_minmax(0px,_1fr)] md:gap-10">
+      <div className=" grid lg:grid-cols-[25%_minmax(0px,_1fr)] md:grid-cols-[30%_minmax(0px,_1fr)] lg:gap-7 md:gap-3">
         <div
           className=""
           onClick={(e) => {
@@ -87,17 +82,17 @@ const Profile = () => {
           {/* Profile sidebar */}
           <div className=" ">
             <div>
-              <h1 className="font-semibold text-[17px] mb-1">
+              <h1 className="font-semibold lg:text-[17px] md:text-[15px] mb-1">
                 Manage my account
               </h1>
             </div>
-            <ul className=" ml-10">
+            <ul className=" ml-8">
               {links.map((mainLinks) =>
                 mainLinks.manageAccount?.map((link, index) => {
                   return (
                     <li
                       key={index}
-                      className={`cursor-pointer hover:underline hover:text-buttonColor font-[500]  ${
+                      className={`cursor-pointer hover:underline hover:text-buttonColor font-[500] text-[14px] lg:text-[16px] ${
                         clickedValue == link
                           ? "text-buttonColor underline"
                           : "text-gray-600 "
@@ -112,15 +107,17 @@ const Profile = () => {
           </div>
           <div className="mt-2">
             <div>
-              <h1 className="font-semibold text-[17px] mb-1">My Orders</h1>
+              <h1 className="font-semibold lg:text-[17px] md:text-[15px] mb-1">
+                My Orders
+              </h1>
             </div>
-            <ul className="ml-10">
+            <ul className="ml-8">
               {links.map((mainLinks) =>
                 mainLinks.orders?.map((link, index) => {
                   return (
                     <li
                       key={index}
-                      className={`cursor-pointer hover:underline hover:text-buttonColor font-[500]  ${
+                      className={`cursor-pointer hover:underline hover:text-buttonColor font-[500] text-[14px] lg:text-[16px] ${
                         clickedValue == link
                           ? "text-buttonColor underline"
                           : "text-gray-600 "
@@ -135,14 +132,16 @@ const Profile = () => {
           </div>
           <div>
             <div className="mt-2">
-              <h1 className="font-semibold text-[17px] ">My WishList</h1>
-              <ul className="ml-10">
+              <h1 className="font-semibold lg:text-[17px] md:text-[15px] ">
+                My WishList
+              </h1>
+              <ul className="ml-8">
                 {links.map((mainLinks) =>
                   mainLinks.wishes?.map((link, index) => {
                     return (
                       <li
                         key={index}
-                        className={`cursor-pointer hover:underline hover:text-buttonColor font-[500]  ${
+                        className={`cursor-pointer hover:underline hover:text-buttonColor font-[500] text-[14px] lg:text-[16px] ${
                           clickedValue == link
                             ? "text-buttonColor underline"
                             : "text-gray-600 "
@@ -157,6 +156,17 @@ const Profile = () => {
             </div>
           </div>
         </div>
+
+        {/* Mobile screen */}
+
+        {/* <div className="md:hidden">
+          <div>
+            <div>
+              <DropdownComponent />
+            </div>
+          </div>
+        </div> */}
+
         <div className="">
           <div>
             <div>{content}</div>

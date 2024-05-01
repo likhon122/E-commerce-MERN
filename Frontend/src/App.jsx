@@ -11,28 +11,32 @@ import Products from "./pages/products/Products";
 import Login from "./pages/account/Login";
 import VerifyUser from "./pages/verifyUser/VerifyUser";
 import LogOut from "./pages/log-out/LogOut";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
 import ForgotPassword from "./pages/forgotPassword/ForgotPassword";
 import ResetPassword from "./pages/forgotPassword/ResetPassword";
 import { verifyUserIsExist } from "./app/features/AuthSlice";
 import Profile from "./pages/account/profile/Profile";
-// import LoadingAnimation from "./components/LoadingAnimation/LoadingAnimation";
+import ProductCategory from "./pages/category/ProductCategory";
+import ProductDetails from "./components/ProductDetails/ProductDetails";
 
 function App() {
-  // const { isLoading } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(verifyUserIsExist());
-  }, [dispatch]);
+    if (!userInfo) {
+      dispatch(verifyUserIsExist());
+    }
+  }, [dispatch, userInfo]);
 
   // if (isLoading) {
   //   return (
   //     <LoadingAnimation otherClass="h-[100vh]" classForSpinner="w-32 h-32" />
   //   );
   // }
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
@@ -51,6 +55,8 @@ function App() {
         <Route path="log-out" element={<LogOut />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="profile/:id" element={<Profile />} />
+        <Route path="category/:categoryId" element={<ProductCategory />} />
+        <Route path="product-details/:slug" element={<ProductDetails />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )

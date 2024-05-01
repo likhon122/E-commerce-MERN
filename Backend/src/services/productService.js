@@ -6,17 +6,17 @@ const { imagePublicUrlWithoutExtention } = require("../helper/cloudinary");
 
 const handleCreateProductService = async (productData) => {
   try {
-    const existingProduct = await Product.findOne({ name: productData.name });
-
-    if (existingProduct) {
-      throw createError(400, "Product is already exist.");
-    }
-
     const ExistingProduct = productData;
+
     const response = await cloudinary.uploader.upload(ExistingProduct.image, {
       folder: "e-commerce-mern/products"
     });
-    ExistingProduct.image = response.secure_url;
+    if (!response.secure_url) {
+      throw createError(400, "Product image is not uploaded!");
+    }
+    if (response.secure_url) {
+      ExistingProduct.image = response.secure_url;
+    }
 
     const product = await Product.create(ExistingProduct);
     return product;
@@ -27,21 +27,75 @@ const handleCreateProductService = async (productData) => {
 
 const handleReadAllProductService = async (page, limit, filter) => {
   try {
-    const products = await Product.find(filter)
-      .select("-image")
-      .populate("category")
+    const productsQuery = Product.find(filter).populate("category");
+
+    const products = await productsQuery
       .limit(limit)
       .skip((page - 1) * limit)
       .sort({ createdAt: -1 });
 
-    if (!products) {
+    if (!products || products.length === 0) {
       throw createError(400, "Products Not found.");
     }
 
     const count = await Product.find(filter).countDocuments();
+
     if (!count) {
       throw createError(400, "Products Not found.");
     }
+
+    return { count, products };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const handleCategoryProductService = async (page, limit, categoryId) => {
+  try {
+    const productsQuery = Product.find({ category: categoryId }).populate(
+      "category"
+    );
+
+    const products = await productsQuery
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 });
+
+    if (!products || products.length === 0) {
+      throw createError(400, "Products Not found.");
+    }
+
+    const count = await Product.find({ category: categoryId }).countDocuments();
+
+    if (!count) {
+      throw createError(400, "Products Not found.");
+    }
+
+    return { count, products };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const handleCategoryAccordingService = async (page, limit, filter) => {
+  try {
+    const productsQuery = Product.find(filter).populate("category");
+
+    const products = await productsQuery
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 });
+
+    if (!products || products.length === 0) {
+      throw createError(400, "Products Not found.");
+    }
+
+    const count = await Product.find(filter).countDocuments();
+
+    if (!count) {
+      throw createError(400, "Products Not found.");
+    }
+
     return { count, products };
   } catch (error) {
     throw error;
@@ -50,7 +104,7 @@ const handleReadAllProductService = async (page, limit, filter) => {
 
 const handleReadSingleProductService = async (slug) => {
   try {
-    const product = await Product.findOne({ slug }).select("-image");
+    const product = await Product.findOne({ slug });
     if (!product) {
       throw createError(400, "Product is Not found with this slug.");
     }
@@ -88,5 +142,7 @@ module.exports = {
   handleCreateProductService,
   handleReadAllProductService,
   handleReadSingleProductService,
-  handleDeleteSingleProductService
+  handleDeleteSingleProductService,
+  handleCategoryAccordingService,
+  handleCategoryProductService
 };

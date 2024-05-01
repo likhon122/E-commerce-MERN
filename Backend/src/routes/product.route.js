@@ -24,7 +24,6 @@ productRouter.post(
   runValidation,
   createProduct
 );
-
 productRouter.get("/:slug", readSingleProduct);
 productRouter.get("/", readAllProduct);
 productRouter.delete("/:slug", isLoggedIn, isAdmin, deleteSingleProduct);

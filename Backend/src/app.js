@@ -16,8 +16,8 @@ const { productRouter } = require("./routes/product.route");
 
 const app = express();
 const limitter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1m
-  limit: 20,
+  windowMs: 1 * 60 * 1000,
+  limit: 70,
   message: "Too may request for this ip! Please try again Later."
 });
 

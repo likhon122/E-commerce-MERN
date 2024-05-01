@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosApiFetch = axios.create({
-  baseURL: " https://e-commerce-mern-zqx9.onrender.com/api/",
+  baseURL: "http://localhost:3001/api/",
   timeout: 5000,
   withCredentials: true,
   headers: {

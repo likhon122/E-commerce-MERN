@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosApiFetch from "../../api/apiConfig";
 
 const initialState = {
-  userInfo: {},
+  userInfo: null,
   isLoading: false,
   isError: false,
   error: null,
@@ -86,7 +86,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.error = action.error?.message;
-        state.userInfo = {};
+        state.userInfo = null;
       });
 
     builder
@@ -96,7 +96,7 @@ const authSlice = createSlice({
       })
       .addCase(logOutUser.fulfilled, (state) => {
         state.isLoading = false;
-        state.userInfo = {};
+        state.userInfo = null;
         state.isLoggedIn = false;
         state.isError = false;
         state.error = null;
@@ -123,7 +123,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.loginError = action.error?.message;
-        state.userInfo = {};
+        state.userInfo = null;
       });
 
     builder

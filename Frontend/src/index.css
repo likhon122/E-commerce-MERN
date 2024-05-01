@@ -3,26 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Works in Firefox */
-/* width */
-::-webkit-scrollbar {
-  width: 7px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f5885f;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #f5885f;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #f5885f;
-}
 
 html {
   overflow-x: hidden;

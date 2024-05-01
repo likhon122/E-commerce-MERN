@@ -7,7 +7,8 @@ const {
   handleCreateProductService,
   handleReadAllProductService,
   handleReadSingleProductService,
-  handleDeleteSingleProductService
+  handleDeleteSingleProductService,
+  handleCategoryProductService
 } = require("../services/productService");
 // const { deleteImage } = require("../helper/deleteImage");
 const cloudinary = require("../config/cloudinary");
@@ -54,6 +55,7 @@ const createProduct = async (req, res, next) => {
       slug: slugify(name),
       description,
       regularPrice,
+      price: Math.floor(regularPrice - (regularPrice * percentOff) / 100),
       percentOff,
       quantity,
       image: image.path,
@@ -77,16 +79,32 @@ const readAllProduct = async (req, res, next) => {
     const search = req.query.search || "";
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
+    const categoryId = req.query.categoryId || "";
 
     const searchRegEx = new RegExp(".*" + search + ".*", "i");
     const filter = {
       $or: [{ name: { $regex: searchRegEx } }]
     };
-    const { count, products } = await handleReadAllProductService(
-      page,
-      limit,
-      filter
-    );
+
+    let count;
+    let products;
+    if (categoryId) {
+      const productInfo = await handleCategoryProductService(
+        page,
+        limit,
+        categoryId
+      );
+      count = productInfo.count;
+      products = productInfo.products;
+    } else {
+      const productInfo = await handleReadAllProductService(
+        page,
+        limit,
+        filter
+      );
+      count = productInfo.count;
+      products = productInfo.products;
+    }
 
     return successResponse(res, {
       statusCode: 200,

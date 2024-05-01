@@ -4,7 +4,7 @@ import React from "react";
 const LoadingAnimation = ({
   otherClass = "",
   text = "Loading...",
-  classForSpinner = ""
+  classForSpinner = "w-32 h-32"
 }) => {
   return (
     <div

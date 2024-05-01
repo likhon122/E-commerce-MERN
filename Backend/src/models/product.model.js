@@ -46,6 +46,10 @@ const productSchema = Schema(
       trim: true,
       required: true
     },
+    price: {
+      type: Number,
+      required: true
+    },
     sold: {
       type: Number,
       default: 0
@@ -72,7 +76,7 @@ const productSchema = Schema(
       required: [true, "Product category id is required"]
     },
     shipping: {
-      type: String,
+      type: Number,
       default: 0
     }
   },

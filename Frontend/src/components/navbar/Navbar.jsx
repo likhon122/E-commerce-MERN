@@ -126,6 +126,9 @@ const Navbar = () => {
                   <div
                     className="cursor-pointer border-buttonColor border-[2px] rounded-full -mr-5"
                     onClick={() => {
+                      if (!isSuccess) {
+                        dispatch(getUserDetails(userInfo._id));
+                      }
                       setOpenUserProfile(!openUserProfile);
                       setShowNavbar(false);
                     }}

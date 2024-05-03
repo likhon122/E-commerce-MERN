@@ -4,6 +4,7 @@ import AuthReducer from "../features/AuthSlice";
 import ProfileReducer from "../features/ProfileSlice";
 import FindCategoryAccordingProductDataReducer from "../features/FindCategoryAccordingData";
 import GetSingleProductReducer from "../features/ProductSlice";
+import GetCartItemsReducer from "../features/CartSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     // verifyUser: verifyUserReducer,
     profile: ProfileReducer,
     findCategoryProduct: FindCategoryAccordingProductDataReducer,
-    findSingleProduct: GetSingleProductReducer
+    findSingleProduct: GetSingleProductReducer,
+    cartItems: GetCartItemsReducer
   }
 });
 

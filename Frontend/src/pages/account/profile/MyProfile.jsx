@@ -34,10 +34,10 @@ const MyProfile = ({ userInfo }) => {
   const [successMessage, setSuccessMessage] = useState(null);
 
   const submitHandler = ({ firstName, lastName, ...values }, { resetForm }) => {
-    if (resetFormData || isSuccess) {
-      console.log("first");
-      resetForm();
-    }
+    // if (resetFormData || isSuccess) {
+    //   console.log("first");
+    //   resetForm();
+    // }
     const name = firstName + " " + lastName;
     const userInfo = { id, name, ...values };
 
@@ -47,9 +47,9 @@ const MyProfile = ({ userInfo }) => {
     if (userInfo.confirmPassword == "") {
       delete userInfo.confirmPassword;
     }
-    if (!resetFormData) {
-      dispatch(updateUserDetails(userInfo));
-    }
+    dispatch(updateUserDetails(userInfo));
+    // if (!resetFormData) {
+    // }
   };
 
   const clearForm = () => {
@@ -106,10 +106,7 @@ const MyProfile = ({ userInfo }) => {
                 confirmPassword: ""
               }}
               validationSchema={updateProfileValidation}
-              onSubmit={(e, { resetForm }) => {
-                console.log(e);
-                resetForm();
-              }}
+              onSubmit={submitHandler}
             >
               <Form className="flex flex-col gap-3">
                 <div className="md:flex md:justify-between md:items-center gap-2 flex-col lg:flex-row ">

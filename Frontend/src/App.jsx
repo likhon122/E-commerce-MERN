@@ -20,9 +20,12 @@ import { verifyUserIsExist } from "./app/features/AuthSlice";
 import Profile from "./pages/account/profile/Profile";
 import ProductCategory from "./pages/category/ProductCategory";
 import ProductDetails from "./components/ProductDetails/ProductDetails";
+import LoadingAnimation from "./components/LoadingAnimation/LoadingAnimation";
+import { fetchCartItems } from "./app/features/CartSlice";
+import CheckOut from "./pages/checkOut/CheckOut";
 
 function App() {
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo, isLoading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -31,11 +34,17 @@ function App() {
     }
   }, [dispatch, userInfo]);
 
-  // if (isLoading) {
-  //   return (
-  //     <LoadingAnimation otherClass="h-[100vh]" classForSpinner="w-32 h-32" />
-  //   );
-  // }
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(fetchCartItems(userInfo._id));
+    }
+  }, [dispatch, userInfo]);
+
+  if (isLoading) {
+    return (
+      <LoadingAnimation otherClass="h-[100vh]" classForSpinner="w-32 h-32" />
+    );
+  }
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -44,7 +53,7 @@ function App() {
         <Route path="blog" element={<Blog />} />
         <Route path="register" element={<Account />} />
         <Route path="login" element={<Login />} />
-        <Route path="cart" element={<Cart />} />
+        <Route path="cart/:userId" element={<Cart />} />
         <Route path="wishlist" element={<Wishlist />} />
         <Route path="products" element={<Products />} />
         <Route path="api/users/verify/:token" element={<VerifyUser />} />
@@ -57,6 +66,7 @@ function App() {
         <Route path="profile/:id" element={<Profile />} />
         <Route path="category/:categoryId" element={<ProductCategory />} />
         <Route path="product-details/:slug" element={<ProductDetails />} />
+        <Route path="checkOut" element={<CheckOut />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )

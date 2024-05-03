@@ -10,7 +10,7 @@ const initialState = {
 };
 
 export const fetchCategoryProductData = createAsyncThunk(
-  "getUser/getUserDetails",
+  "categoryProducts/getCategoryProducts",
   async (filter) => {
     try {
       const productsInfo = await axiosApiFetch.get(`/products`, {

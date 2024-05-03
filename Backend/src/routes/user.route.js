@@ -14,7 +14,6 @@ const {
 } = require("../controllers/user.controller");
 const { uploadUserImage } = require("../helper/uploadImage");
 const { isLoggedIn, isLoggedOut, isAdmin } = require("../middlewares/auth");
-// const upload = require("../middlewares/uploadImage");
 const { runValidation } = require("../validation");
 const {
   userRegistrationValidation,

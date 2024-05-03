@@ -19,11 +19,15 @@ import { AvatarComponent } from "../keepReact/Avatar";
 import { useDispatch, useSelector } from "react-redux";
 import ProfileInfo from "../../pages/account/ProfileInfo";
 import { getUserDetails } from "../../app/features/ProfileSlice";
+import SpinnerComponent from "../keepReact/Spinner";
 
 const Navbar = () => {
   const { userInfo, isError, isLoggedIn } = useSelector((state) => state.auth);
   const { userInfo: loginUserInfo, isSuccess } = useSelector(
     (state) => state.profile
+  );
+  const { products, deleteCartState, cartState } = useSelector(
+    (state) => state.cartItems
   );
 
   const [showNavbar, setShowNavbar] = useState(false);
@@ -164,8 +168,19 @@ const Navbar = () => {
                     <h3 className="text-md">Wishlist</h3>
                   </div>
                 </Link>
-                <Link to={"/cart"}>
+                <Link to={`/cart/${userInfo?._id}`}>
                   <div className="flex justify-center items-center gap-1 cursor-pointer hover:text-cardHoverColor">
+                    <div className="absolute mt-[-32px] mr-[20px] h-5 w-5 bg-buttonColor rounded-full">
+                      <div className="flex items-center justify-center lg:mt-[-2px] text-white font-medium">
+                        {deleteCartState.isLoading || cartState.isLoading ? (
+                          <SpinnerComponent extraClass="h-4 w-4 border-white mt-[3px] border-2" />
+                        ) : products?.items.length ? (
+                          products?.items.length
+                        ) : (
+                          0
+                        )}
+                      </div>
+                    </div>
                     <BsCart className="lg:text-xl text-[17px]" />
                     <h3 className="text-md">Cart</h3>
                   </div>
@@ -253,6 +268,7 @@ const Navbar = () => {
                       openUserProfile={openUserProfile}
                       setOpenUserProfile={setOpenUserProfile}
                       userInfo={loginUserInfo}
+                      cartProductsLength={products?.items.length}
                     />
                   </div>
                 )}

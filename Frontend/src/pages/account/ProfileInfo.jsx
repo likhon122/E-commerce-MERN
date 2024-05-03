@@ -19,7 +19,8 @@ import { ModalComponent } from "../../components/keepReact/CheckPermission";
 const ProfileInfo = ({
   openUserProfile = false,
   setOpenUserProfile,
-  userInfo
+  userInfo,
+  cartProductsLength
 }) => {
   const [showPermission, setShowPermission] = useState(false);
   const handleClick = () => {
@@ -57,8 +58,13 @@ const ProfileInfo = ({
               className="hover:bg-gray-200 cursor-pointer transition-all duration-300 px-2"
               onClick={handleClick}
             >
-              <Link to={"/cart"}>
+              <Link to={`/cart/${userInfo._id}`}>
                 <Sidebar.Item>
+                  <div className="absolute h-5 w-5 bg-buttonColor -mt-[34px] ml-2 rounded-full">
+                    <div className="flex items-center justify-center text-white font-medium mt-[-1px]">
+                      {cartProductsLength ? cartProductsLength : 0}
+                    </div>
+                  </div>
                   <ShoppingCart size={24} />
                   <h1 className="text-[15px] md:text-[16px]">Cart</h1>
                 </Sidebar.Item>

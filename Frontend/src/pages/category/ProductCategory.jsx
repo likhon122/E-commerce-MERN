@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategoryProductData } from "../../app/features/FindCategoryAccordingData";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ProductFilterNavbar from "../../components/Product/ProductFilterNavbar";
 import ProductFilterSidebar from "../../components/Product/ProductFilterSidebar";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
+import { AlertComponent } from "../../components/keepReact/Alart";
+import { addCartItem } from "../../app/features/CartSlice";
 
 const ProductCategory = () => {
   const dispatch = useDispatch();
@@ -14,6 +16,40 @@ const ProductCategory = () => {
   const { products, isSuccess, isError, error, isLoading } = useSelector(
     (state) => state.findCategoryProduct
   );
+
+  const { cartState } = useSelector((state) => state.cartItems);
+
+  const {
+    isSuccess: addToCartSuccess,
+    isLoading: addToCartLoading,
+    isError: addToCartError,
+    error: addToCartErrorMessage
+  } = cartState;
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [clickedAddToCart, setClickedAddToCart] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleAddToCart = (productId) => {
+    setClickedAddToCart(true);
+    if (!userInfo) {
+      setIsLoggedIn(true);
+
+      setTimeout(() => {
+        setIsLoggedIn(false);
+        navigate("/register");
+      }, 4000);
+    }
+
+    dispatch(addCartItem({ userId: userInfo._id, productId }));
+
+    setTimeout(() => {
+      setClickedAddToCart(false);
+    }, 3000);
+  };
 
   const filter = useMemo(
     () => ({
@@ -39,7 +75,24 @@ const ProductCategory = () => {
   if (products.products) {
     return (
       <>
-        <div className="mx-[10%]">
+        <div className="mx-[10%] ">
+          <div className=" right-10 mt-3 z-30 fixed">
+            {isLoggedIn && (
+              <AlertComponent
+                color="primary"
+                message="Please Register First and Login then use add to cart functionality"
+              />
+            )}
+            {clickedAddToCart && !addToCartError && !isLoggedIn && (
+              <AlertComponent
+                color="success"
+                message="Cart Added Successfully"
+              />
+            )}
+            {addToCartError && clickedAddToCart && !isLoggedIn && (
+              <AlertComponent color="error" message={addToCartErrorMessage} />
+            )}
+          </div>
           <div>
             <div>
               <ProductFilterSidebar />
@@ -134,8 +187,16 @@ const ProductCategory = () => {
                         </div>
                         <div className="">
                           <div className="flex flex-col  ">
-                            <div className="bg-white border border-blue-500 py-1 px-2 text-center rounded-lg w-full cursor-pointer hover:bg-blue-500 hover:text-white duration-300 mt-2 text-blue-500">
-                              <Link className="font-medium">Add To Cart</Link>
+                            <div
+                              className=""
+                              onClick={() => handleAddToCart(_id)}
+                            >
+                              <button
+                                className="font-medium bg-white border border-blue-500 py-1 px-2 text-center rounded-lg w-full cursor-pointer hover:bg-blue-500 hover:text-white duration-300 mt-2 text-blue-500 disabled:cursor-not-allowed"
+                                disabled={addToCartLoading}
+                              >
+                                Add To Cart
+                              </button>
                             </div>
                             <div className="bg-buttonColor border border-borderColor py-1 px-2 text-center rounded-lg w-full cursor-pointer hover:bg-white t hover:text-buttonColor duration-300 mt-2 text-white">
                               <Link className="font-medium">Buy Now</Link>

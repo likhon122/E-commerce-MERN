@@ -13,6 +13,7 @@ const { errorResponse } = require("./helper/responseHelper");
 const authRouter = require("./routes/auth.route");
 const { categoryRouter } = require("./routes/category.route");
 const { productRouter } = require("./routes/product.route");
+const cartRouter = require("./routes/Cart.route");
 
 const app = express();
 const limitter = rateLimit({
@@ -49,6 +50,7 @@ app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/products", productRouter);
+app.use("/api/cart", cartRouter);
 
 app.use((req, res, next) => {
   next(createError(404, "Route not Found!"));

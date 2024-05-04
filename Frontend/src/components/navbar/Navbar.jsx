@@ -302,7 +302,10 @@ const Navbar = () => {
                     <h3 className="text-md">Wishlist</h3>
                   </div>
                 </Link>
-                <Link to={"/cart"} onClick={() => setShowDetails(!showDetails)}>
+                <Link
+                  to={`/cart/${userInfo?._id}`}
+                  onClick={() => setShowDetails(!showDetails)}
+                >
                   <div className="flex  items-center gap-1 cursor-pointer mb-1 hover:text-cardHoverColor">
                     <BsCart className=" text-[14px] text-cardHoverColor" />
                     <h3 className="text-md">Cart</h3>

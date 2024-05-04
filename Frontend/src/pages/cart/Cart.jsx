@@ -226,7 +226,7 @@ const Cart = () => {
             })}
 
             {products.items.length > 0 ? (
-              <div className="mx-6 mt-3 ">
+              <div className="mt-3 ">
                 <div className="flex justify-between">
                   <button
                     className="w-[140px] px-2 py-2 bg-buttonColor rounded-md text-white border-2 border-buttonColor hover:bg-transparent hover:text-buttonColor duration-300"
@@ -241,10 +241,10 @@ const Cart = () => {
                     Clear Cart
                   </button>
                 </div>
-                <div>
-                  <div className="mt-10 flex justify-between px-6">
-                    <div></div>
-                    <div className="flex flex-col border-2 border-gray-400 p-3 w-[30%] -mt-1 rounded">
+                <div className="bg-red-200">
+                  <div className="my-10 flex justify-end ">
+                    
+                    <div className="flex flex-col border-2 border-gray-400 p-3 lg:w-[450px] md:w-[400px] w-full -mt-1 rounded">
                       <h3 className="text-[17px] font-semibold text-center">
                         Cart Total
                       </h3>

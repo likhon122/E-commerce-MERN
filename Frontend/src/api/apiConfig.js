@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const axiosApiFetch = axios.create({
-  baseURL: "https://e-commerce-mern-zqx9.onrender.com/api/", 
-  timeout: 5000,
+  baseURL: "https://e-commerce-mern-ehqa.onrender.com/api/",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json"

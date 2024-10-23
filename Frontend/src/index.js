@@ -14,7 +14,7 @@ import womenPant from "./assets/images/categoryImages/womenPant.png";
 import menShirt from "./assets/images/categoryImages/shortShirt.png";
 import womenShirt from "./assets/images/categoryImages/shirtWomen.png";
 import menPicture from "./assets/images/categoryImages/young-man.png";
-import womenPicture from "./assets/images/categoryImages/womenPicture.png";
+import womenPicture from "./assets/images/categoryImages/womenPicture.png"; 
 
 export {
   logo,

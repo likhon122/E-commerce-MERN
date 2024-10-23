@@ -241,7 +241,7 @@ const Cart = () => {
                     Clear Cart
                   </button>
                 </div>
-                <div className="bg-red-200">
+                <div className="">
                   <div className="my-10 flex justify-end ">
                     
                     <div className="flex flex-col border-2 border-gray-400 p-3 lg:w-[450px] md:w-[400px] w-full -mt-1 rounded">

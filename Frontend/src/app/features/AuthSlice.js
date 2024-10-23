@@ -38,13 +38,12 @@ const register = async (userInfo) => {
 
 const login = async (data) => {
   try {
-    const response = await axiosApiFetch.post("/auth/login", {
-      ...data
-    });
+    const response = await axiosApiFetch.post("/auth/login", data);
     if (response.data.payload.loggedInUserInfo) {
       return response.data.payload.loggedInUserInfo;
     }
   } catch (error) {
+    console.log(error);
     throw Error(error.response.data.message);
   }
 };
@@ -58,6 +57,7 @@ export const registerUser = createAsyncThunk(
 );
 
 export const loginUser = createAsyncThunk("login/loginUser", async (data) => {
+  console.log(data);
   const response = await login(data);
   return response;
 });

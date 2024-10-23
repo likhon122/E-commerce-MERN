@@ -36,8 +36,10 @@ const isLoggedOut = (req, res, next) => {
   try {
     // Check token existence
     const { accessToken } = req.cookies;
+    console.log("Access Token", accessToken);
     if (accessToken) {
       const decoded = jwt.verify(accessToken, jwtAccessKey);
+      console.log(decoded);
       if (decoded) {
         throw createError(
           403,
@@ -54,7 +56,7 @@ const isLoggedOut = (req, res, next) => {
 };
 const isAdmin = (req, res, next) => {
   try {
-    // find user from re.user
+    // find user from req.user
 
     const { user } = req;
     if (!user) {
@@ -72,6 +74,5 @@ const isAdmin = (req, res, next) => {
     return next(error);
   }
 };
-
 
 module.exports = { isLoggedIn, isLoggedOut, isAdmin };

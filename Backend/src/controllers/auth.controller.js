@@ -14,6 +14,8 @@ const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
+    console.log("Email", { email, password });
+
     if (!email || !password) {
       throw createError("Email or password is required");
     }
@@ -31,6 +33,8 @@ const userLogin = async (req, res, next) => {
     if (!isPasswordMatch) {
       throw createError(401, "User email or password did not matched");
     }
+
+    console.log("User", user);
 
     // create refresh token, jwd token and set token to cookie!
     createAccessToken(res, user);

@@ -28,6 +28,8 @@ const processRegister = async (req, res, next) => {
       return next(createError(400, "Invalid input data"));
     }
 
+    console.log({ name, email, password, phone, address });
+
     // console.log(req.file);
     const image = req.file;
     // console.log(image);

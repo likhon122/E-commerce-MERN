@@ -38,12 +38,13 @@ const createAccessToken = (res, user) => {
     throw error;
   }
 };
+
 const createRefreshToken = (res, user) => {
   try {
-    const refreshToken = createJsonWebToken({ user }, jwtRefreshKey, "7d");
+    const refreshToken = createJsonWebToken({ user }, jwtRefreshKey, "15d");
     try {
       res.cookie("refreshToken", refreshToken, {
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+        maxAge: 15 * 24 * 60 * 60 * 1000, // 15 day
         httpOnly: true,
         secure: true,
         sameSite: "none"
